@@ -146,7 +146,10 @@ timezone: "America/Sao_Paulo"
 markdown: kramdown
 highlighter: rouge
 permalink: /:year-:month-:day-:title/
+
+gems: [jekyll-paginate]
 paginate: 5
+paginate_path: "page:num"
 
 kramdown:
   input: GFM

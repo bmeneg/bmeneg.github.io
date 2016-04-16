@@ -57,4 +57,6 @@ Quem sabe?
 Não tenho muito a compartilhar sobre projetos, mas minhas redes pessoais estão à
 disposição de todos.
 
-Este sou eu. Agradeço a presença. Até mais.
+Este sou eu.  
+Agradeço a presença.  
+Até mais.
