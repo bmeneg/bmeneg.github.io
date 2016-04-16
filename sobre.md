@@ -2,6 +2,7 @@
 layout: page
 title: Minha pessoa
 subtitle: Por que você iria ler algo escrito por mim
+bigimg: /img/dresden.jpg
 ---
 
 ## Literalmente, sobre mim
