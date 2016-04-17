@@ -9,8 +9,7 @@ layout: null
 body {
   font-family: 'Lora', 'Times New Roman', serif;
   font-size: 14px;
-  /* color: #404040; */
-  /* gray */
+  /* dark gray */
   color: #272822;
   position: relative;
   background-color: {{ site.page-col }};
@@ -328,8 +327,7 @@ footer .theme-by {
 
 .post-preview a {
   text-decoration: none;
-  /* color: #404040; */
-  /* gray */
+  /* dark gray */
   color: #272822;
 }
 
