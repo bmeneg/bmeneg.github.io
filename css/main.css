@@ -9,7 +9,8 @@ layout: null
 body {
   font-family: 'Lora', 'Times New Roman', serif;
   font-size: 14px;
-  color: #404040;
+  /* color: #404040; */
+  color: #272822;
   position: relative;
   background-color: {{ site.page-col }};
   {% if site.page-img %}
@@ -253,8 +254,8 @@ img {
   }
   .navbar-custom .nav .navlinks-container .navlinks-children a {
     padding-left: 10px;
-    border: 1px solid #eaeaea;
-    border-width: 0 1px 1px;
+    /* border: 1px solid #eaeaea;
+    border-width: 0 1px 1px; */
   }
 }
 
@@ -325,7 +326,8 @@ footer .theme-by {
 
 .post-preview a {
   text-decoration: none;
-  color: #404040;
+  /* color: #404040; */
+  color: #12376d;
 }
 
 .post-preview a:focus,
