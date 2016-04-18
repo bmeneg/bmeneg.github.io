@@ -32,7 +32,7 @@ Outra coisa importante de apontar é que não pretendo falar de apenas coisas
 relacionadas a tecnologia X, Y, ... irei falar de tudo que me parecer
 interessante e, quando quiser, fique totalmente a vontade para comentar, abrir
 uma discussão perguntando ou criticando, só peço que se quiser partir para
-ofensas ou coisas totalmente não relacionadas ao assunto do post: **vá chingar
+ofensas ou coisas totalmente não relacionadas ao assunto do post: **vá xingar
 muito no Twitter**, simples.
 
 Torço para que gostem do que irei apresentar, caso não gostarem... largo meu
