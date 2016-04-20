@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Chroot e qemu para ambiente ARM em X86 
-subtitle: Usando chroot e qemu para desenvolver para ARM em outra arquitetura
+title: Chroot e QEMU para ARM em x86 
+subtitle: Usando chroot e QEMU para desenvolver para ARM em outra arquitetura
 ---
 
 De forma breve tentarei contextualizar a necessidade que tive para chegar a esta
