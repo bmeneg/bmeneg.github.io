@@ -5,8 +5,8 @@ subtitle: Usando chroot e QEMU para desenvolver para ARM em outra arquitetura
 ---
 
 De forma breve tentarei contextualizar a necessidade que tive para chegar a esta
-técnica que irei apresentar, que sem dúvida, quando descobri, fiquei
-absurdamente impressionado.
+técnica que irei apresentar, que sem dúvida, quando descobri, fiquei rindo por 
+algum tempo sozinho.
 
 ## A necessidade 
 
