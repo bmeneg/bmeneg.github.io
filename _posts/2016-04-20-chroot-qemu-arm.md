@@ -11,7 +11,7 @@ absurdamente impressionado.
 ## A necessidade 
 
 Como todos vocês devem saber (baste dar uma lida rápida [sobre
-mim](/sobre) trabalho com Linux Embarcado, principalmente sobre
+mim](/sobre)) trabalho com Linux Embarcado, principalmente sobre
 plataformas ARM, e de tempos em tempos sou responsável por gerar a imagem do
 sistema completo (bootloader + kernel + rootfs + aplicações da solução
 proprietária) de uma forma que facilite no ambiente de produção. Cada um desses
@@ -132,13 +132,11 @@ plataformas, como ARMv7. O comando para registrar é um tanto diferente:
 Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do 
 módulo [binfmt_misc](https://www.kernel.org/doc/Documentation/binfmt_misc.txt) 
 temos a seguinte informação:
-
 > Binfmt_misc recognises the binary-type by matching some bytes at the beginning
 of the file with a magic byte sequence (masking out specified bits) you have 
 supplied.  
 
 e também:
-
 > To actually register a new binary type, you have to set up a string looking 
 like :name:type:offset:magic:mask:interpreter:flags (where you can choose the 
 ':' upon your needs) and echo it to /proc/sys/fs/binfmt_misc/register.
