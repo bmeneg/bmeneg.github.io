@@ -130,15 +130,16 @@ plataformas, como ARMv7. O comando para registrar é um tanto diferente:
 Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do 
 módulo [binfmt_misc](https://www.kernel.org/doc/Documentation/binfmt_misc.txt) 
 temos a seguinte informação:
+
 > Binfmt_misc recognises the binary-type by matching some bytes at the beginning
-> of the file with a magic byte sequence (masking out specified bits) you have 
-> supplied.  
+  of the file with a magic byte sequence (masking out specified bits) you have 
+  supplied.  
 
 e também:
 
 > To actually register a new binary type, you have to set up a string looking 
-> like :name:type:offset:magic:mask:interpreter:flags (where you can choose the 
-> ':' upon your needs) and echo it to /proc/sys/fs/binfmt_misc/register.
+  like :name:type:offset:magic:mask:interpreter:flags (where you can choose the 
+  ':' upon your needs) and echo it to /proc/sys/fs/binfmt_misc/register.
 
 Ou seja, cada campo separado por ':' possui um significado próprio, sendo estes:
 
