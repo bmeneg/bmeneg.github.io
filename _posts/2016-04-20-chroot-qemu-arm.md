@@ -162,7 +162,7 @@ Ou seja, cada campo separado por ':' possui um significado próprio, sendo estes
 
 Para maiores detalhes sobre o valor mágico passado visite este 
 [link](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format). Apenas para 
-facilitar, os primeiros bytes **\x7fELF\x01** indica ser um arquivo com formato
+facilitar, os primeiros bytes **\x7fELF\x01** indicam ser um arquivo com formato
 ELF de 32 bits, já em **\x02\x00\x28\x00** quer dizer que é um executável para
 plataforma ARM, ou seja, todos arquivos _executáveis, com formato ELF de 32 
 bits e compilados para ARM_ devem ser executados pelo **interpreter**.
