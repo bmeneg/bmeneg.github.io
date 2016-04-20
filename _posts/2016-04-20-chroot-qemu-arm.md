@@ -188,8 +188,8 @@ Quando finalizado, você pode recompactar o rootfs em um .tar.gz ou então apena
 desmontar a imagem .img (e os binds feitos) e utilizá-la em uma plataforma ARM 
 real. 
 
-Assim é como efetuo alterações de forma simples e rápida em minhas tarefas
-do dia a dia.
+Assim é como efetuo alterações e testes de forma simples e rápida em minhas 
+tarefas do dia a dia.
 
 Qualquer dúvida ou crítica, mandem um comentário!  
 Valew a todos e até o próximo post! \o.
