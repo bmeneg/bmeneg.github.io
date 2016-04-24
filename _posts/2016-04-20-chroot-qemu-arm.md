@@ -80,8 +80,7 @@ paralela, porém é necessário possuir alguma aplicação com tal suporte insta
 como o **pigz**.
 
 ```
-# tar -xpf ArchLinuxArm-sun7i-latest.tar.gz -C arm-chroot \
-    --use-compress-program=pigz -C arm-chroot
+# tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz -C arm-chroot
 ```
 
 A partir de agora é onde a _mágica_ acontece: baixe a versão estática do binário
