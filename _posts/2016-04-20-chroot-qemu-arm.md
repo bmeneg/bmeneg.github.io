@@ -29,8 +29,8 @@ por exemplo. Com certeza melhorias poderiam ser feitas para habilitar este
 suporte, mas por uma questão de tempo as coisas não correm sempre como o ideal
 né? 
 
-Este processo de gravar a imagem, modificar o que for necessário quando aos
-pacotes do sistema e compactar (fazer um _backup_) do sistema inteiro levava um
+Este processo de gravar a imagem, modificar o que for necessário quanto aos
+pacotes do sistema e compactar o sistema inteiro (fazer um _backup_) levava um
 bom tempo (considerando as mudanças), ainda mais contando que a plataforma
 utilizada não possuí um grande poder de processamento.
 
@@ -43,15 +43,15 @@ o **chroot** faz, misturado com o suporte das diferentes arquiteturas do
 
 Foi aí que descobri como utilizar exatamente estas duas ferramentas juntas
 através de uma pitadinha de _mágica_ que as entranhas do kernel as vezes nos
-enconde.
+esconde.
 
-Utilizando um módulo do chamado **binfmt_misc** é possível você registrar um
+Utilizando um módulo do chamado **binfmt_misc** é possível registrar um
 interpretador específico para um determinado tipo de arquitetura quando
 necessário. Em outras palavras, você consegue dizer ao kernel qual executável
 ele deve usar para interpretar outro que foi compilado para uma arquitura
 específica X. Mas vamos com calma.
 
-Para começar, irei supor que quero criar uma imagem de um sistema de arquivos
+Para começar, vamos supor que precisamos criar uma imagem de um sistema de arquivos
 ARM para depois poder utilizar na plataforma ARM.
 
 ```
