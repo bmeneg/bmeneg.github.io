@@ -4,11 +4,6 @@ title: Limitações e pitfalls das memórias NAND SLC/MLC/TLC
 subtitle: O suporte mal feito para memórias NAND pode gerar grandes dores de cabeça
 ---
 
-## Limitações e _pitfalls_ do suporte às memórias NAND SLC/MLC/TLC
-
-**Fonte: [Boris Brezillon [2015]](https://events.linuxfoundation.org/sites/events/files/slides/brezillon-mlc-nand_0.pdf)
-e [Linux MTD](http://www.linux-mtd.infradead.org)**
-
 O suporte às memórias NAND na árvore principal do Kernel do Linux se mostram bastante maduras para o uso do total
 potencial destas memórias, porém, mesmo o suporte sendo bastante robusto e completo alguns problemas relacionados ao
 _chip_/arquitetura das memórias tem trazido vários problemas às aplicações, principalmente àquelas que rodam sobre
@@ -110,3 +105,8 @@ decisões! Verifiquem como está o suporte para tal no Kernel considerado estáv
 Vou ficando por aqui sobre este assunto. Qualquer dúvida ou crítica só enviar um comentário ou entrar em contato em
 minhas redes sociais.  
 Até mais.
+
+**Fontes:  
+[Boris Brezillon [2015]](https://events.linuxfoundation.org/sites/events/files/slides/brezillon-mlc-nand_0.pdf)  
+[Linux MTD](http://www.linux-mtd.infradead.org)**
+
