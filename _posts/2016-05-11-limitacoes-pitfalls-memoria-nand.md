@@ -57,7 +57,7 @@ gravemente de acordo a temperatura do ambiente e também pela leitura e escrita 
 chamado de _operation disturbance_.
 
 Infelizmente, _operation disturbance_ pode ocorrer em qualquer categoria de memórias NAND, mas se mostra muito mais
-presente nas memórias de células multi-nível (MLC e TLC). A figura a seguir exemplifica de maneira simples o que é este
+presente nas memórias de células multinível (MLC e TLC). A figura a seguir exemplifica de maneira simples o que é este
 problema. E de forma resumida pode ser dito que isso ocorre pois a mudança de tensão em um ponto gera pequenas variações
 de tensão por pequeno período de tempo nas regiões adjacentes à modificada.
 
@@ -86,7 +86,11 @@ fabricantes, a qual não existe ainda.
 Para alguns destes problemas há soluções, porém, muitas delas são meramente teóricas e de difícil implementação e,
 consequentemente, teste, estando diretamente relacionadas aos drivers e aos sistemas de arquivos específicos para
 memórias NAND, os quais devem ser utilizados **sempre** que possível, pois o uso de um sistema de arquivo não preparado
-para esse tipo de memória (como o EXT3 ou 4) diminuirá drasticamente a vida útil desta. 
+para esse tipo de memória (como o EXT3 ou 4) diminuirá drasticamente a vida útil desta. Mas também é importante observar
+que mesmo estes sistemas de arquivos, sendo mais recomendados que os tradicionais, ainda não se mostram totalmente
+preparados para lidar com memórias de células multiníveis, como é possível ver neste
+[link](http://www.linux-mtd.infradead.org/doc/ubifs.html#L_ubifs_mlc) (obrigado [Sérgio Prado](http://sergioprado.org/)
+por esta informação adicional).
 
 Embora constantes estudos e desenvolvimentos estão sendo feitos sobre possíveis soluções, ainda é preferível evitar o
 uso das **memórias multi-nivel** como fonte **principal** de armazenamento, pois muitas das soluções conhecidas
