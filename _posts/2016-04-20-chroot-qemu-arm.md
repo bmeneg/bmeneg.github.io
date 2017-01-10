@@ -72,7 +72,7 @@ descompacte dentro da pasta que foi criada e que será onde acessaremos como
 chroot.
 
 ```
-# tar -zxpf ArchLinuxArm-armv7-latest.tar.gz -C arm-chroot
+# tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot
 ```
 
 Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactação
@@ -80,7 +80,7 @@ paralela, porém é necessário possuir alguma aplicação com tal suporte insta
 como o **pigz**.
 
 ```
-# tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz -C arm-chroot
+# tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot
 ```
 
 A partir de agora é onde a _mágica_ acontece: baixe a versão estática do binário
