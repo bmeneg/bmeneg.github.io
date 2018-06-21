@@ -55,7 +55,7 @@ avatar: "/img/avatar-icon.png"
 # footer-link-col: "#404040"
 navbar-col: "#141e32"
 navbar-text-col: "#84ab99"
-navbar-children-col: "#141e32"
+navbar-children-col: "#223355"
 page-col: "#FFFFFF"
 link-col: "#3a4e45"
 hover-col: "#9ac7b3"
@@ -89,7 +89,7 @@ social-network-links:
   twitter: bmeneguele
 #  reddit: yourname
 #  google-plus: +DeanAttali
-  linkedin: in/bmeneguele
+  linkedin: bmeneguele
 #  xing: yourname
 #  stackoverflow: "3943160/daattali"
 #  snapchat: deanat78
