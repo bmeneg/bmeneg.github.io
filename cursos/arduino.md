@@ -82,3 +82,17 @@ contato.
 
 O valor total é de *R$ 400,00* podendo ser pago via cartão de crédito ou boleto
 bancário pelo sistemas PagSeguro.
+
+<div align="center">
+<!-- INICIO FORMULARIO BOTAO PAGSEGURO -->
+<form action="https://pagseguro.uol.com.br/checkout/v2/payment.html"
+method="post">
+<!-- NÃO EDITE OS COMANDOS DAS LINHAS ABAIXO -->
+<input type="hidden" name="code" value="F71575106A6AF26CC49B2FAA1A0EB4B2" />
+<input type="hidden" name="iot" value="button" />
+<input type="image"
+src="https://stc.pagseguro.uol.com.br/public/img/botoes/pagamentos/120x53-comprar-preto.gif"
+name="submit" alt="Pague com PagSeguro - é rápido, grátis e seguro!" />
+</form>
+<!-- FINAL FORMULARIO BOTAO PAGSEGURO -->
+</div>
