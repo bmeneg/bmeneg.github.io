@@ -23,9 +23,9 @@ description: Registro de cada conhecimento adquirido no meu dia de trabalho.
 
 # List of links in the navigation bar
 navbar-links:
-  Sobre: "sobre"
   Cursos: 
-    - Arduino: "curso-arduino"
+    - Arduino: "cursos/arduino"
+  Sobre: "sobre"
 #  Resources:
 #    - Beautiful Jekyll: "http://deanattali.com/beautiful-jekyll/"
 #    - Learn markdown: "http://www.markdowntutorial.com/"
@@ -44,20 +44,29 @@ avatar: "/img/avatar-icon.png"
 
 # Personalize the colors in your website. Colour values can be any valid CSS colour
 
-navbar-col: "#F5F5F5"
-navbar-text-col: "#404040"
-navbar-children-col: "#F5F5F5"
+# navbar-col: "#F5F5F5"
+# navbar-text-col: "#404040"
+# navbar-children-col: "#F5F5F5"
+# page-col: "#FFFFFF"
+# link-col: "#008AFF"
+# hover-col: "#0085A1"
+# footer-col: "#F5F5F5"
+# footer-text-col: "#777777"
+# footer-link-col: "#404040"
+navbar-col: "#141e32"
+navbar-text-col: "#84ab99"
+navbar-children-col: "#141e32"
 page-col: "#FFFFFF"
-link-col: "#008AFF"
-hover-col: "#0085A1"
-footer-col: "#F5F5F5"
-footer-text-col: "#777777"
-footer-link-col: "#404040"
+link-col: "#3a4e45"
+hover-col: "#9ac7b3"
+footer-col: "#141e32"
+footer-text-col: "#84ab99"
+footer-link-col: "#3a4e45"
 
 # Alternatively, the navbar, footer, and page background can be set to use background images
 # instead of colour
 
-# navbar-img: "/img/bgimage.png"
+# navbar-img: "/img/dresden.jpg"
 # footer-img: "/img/bgimage.png"
 # page-img: "/img/bgimage.png"
 
@@ -66,7 +75,7 @@ footer-link-col: "#404040"
 # Change all these values or delete the ones you don't want.
 # Important: you must keep the "name" parameter, everything else you can remove
 author:
-  name: Some Person
+  name: Bruno E. O. Meneguele
 
 # Select your active Social Network Links.
 # Uncomment the links you want to show in the footer and add your information to each link.
@@ -74,13 +83,13 @@ author:
 # If you want to add a new link that isn't here, you'll need to also edit the file _data/SocialNetworks.yml
 social-network-links:
   rss: true
-  email: "someone@example.com"
-  facebook: daattali
-  github: daattali
-  twitter: daattali
+  email: "bmeneguele@gmail.com"
+#  facebook:
+  github: bmeneguele
+  twitter: bmeneguele
 #  reddit: yourname
 #  google-plus: +DeanAttali
-#  linkedin: daattali
+  linkedin: in/bmeneguele
 #  xing: yourname
 #  stackoverflow: "3943160/daattali"
 #  snapchat: deanat78
@@ -123,7 +132,7 @@ google_analytics: "UA-76416508-1"
 # --- Comments --- #
 
 # Fill in your Disqus shortname (NOT the userid) if you want to support Disqus comments
-# disqus: ""
+disqus: "bmeneguele"
 
 # To use Facebook Comments, fill in a Facebook App ID
 # fb_comment_id: ""
