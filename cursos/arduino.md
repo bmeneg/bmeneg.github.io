@@ -50,7 +50,7 @@ outros) e alguns sensores e atuadores para serem utilizados na sala de aula.
 
 ## Metodologia
 
-O conteúdo será aprensentado, sempre que possível, de maneira prática,
+O conteúdo será apresentado, sempre que possível, de maneira prática,
 exemplificando o conceito em questão, porém todo o conteúdo teórico será
 apresentado com o auxilio de slides e quadro branco (principalmente), sendo que
 o todo conteúdo será disponibilizado aos alunos. Não haverá provas ou atividades
