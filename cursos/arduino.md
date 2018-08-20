@@ -66,9 +66,9 @@ serão abordados.
 
 ## Datas, horários e duração
 
-O curso tem duração de 20 horas, sendo estas distribuídas em 3 dias: 18 e 25 de
-agosto, das 08h30 até 18h00 (8 horas), com intervalo de 1h30 de almoço, enquanto
-01 de setembro será das 08h30 até 12h30 (4 horas).
+O curso tem duração de 20 horas, sendo estas distribuídas em 3 dias que ainda
+estão indefinidos, porém tudo indica que ocorrerá no final de setembro e início
+de outubro.
 
 ## Inscrição
 
