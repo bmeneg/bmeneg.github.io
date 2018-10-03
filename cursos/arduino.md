@@ -66,33 +66,17 @@ serão abordados.
 
 ## Datas, horários e duração
 
-O curso tem duração de 20 horas, sendo estas distribuídas em 3 dias que ainda
-estão indefinidos, porém tudo indica que ocorrerá no final de setembro e início
-de outubro.
+A princípio o curso tem duração de 20 horas, sendo estas distribuídas em 3 dias
+que ainda estão indefinidos.
 
-## Inscrição
+## Interessados
 
-Para se inscrever basta acessar o sistema de pagamento do curso (PagSeguro),
-preencher as informações, validar e confirmar o pagamento e esperar até que eu
-envie a *confirmação de inscrição*, o que deve acontecer no mesmo dia do
-pagamento caso tudo correr bem. Em caso de qualquer dúvida, basta entrar em
-contato.
+Os interessados podem enviar um email diretamente para mim
+(bmeneguele@gmail.com) ou então através de qualquer rede social informando o
+interesse. Assim que uma quantidade de pessoas declarar interesse o curso será
+oficialmente marcado.
 
 ## Valor e forma de pagamento
 
-O valor total é de *R$ 400,00* podendo ser pago via cartão de crédito ou boleto
-bancário pelo sistemas PagSeguro.
+O valor será definido quando o curso for planejado oficialmente.
 
-<div align="center">
-<!-- INICIO FORMULARIO BOTAO PAGSEGURO -->
-<form action="https://pagseguro.uol.com.br/checkout/v2/payment.html"
-method="post">
-<!-- NÃO EDITE OS COMANDOS DAS LINHAS ABAIXO -->
-<input type="hidden" name="code" value="F71575106A6AF26CC49B2FAA1A0EB4B2" />
-<input type="hidden" name="iot" value="button" />
-<input type="image"
-src="https://stc.pagseguro.uol.com.br/public/img/botoes/pagamentos/120x53-comprar-preto.gif"
-name="submit" alt="Pague com PagSeguro - é rápido, grátis e seguro!" />
-</form>
-<!-- FINAL FORMULARIO BOTAO PAGSEGURO -->
-</div>
