@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on bmeneg&#39;s blog</title>
+    <link>https://bmeneg.com/posts/</link>
+    <description>Recent content in Posts on bmeneg&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 11 May 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Limitações e pitfalls das memórias NAND SLC/MLC/TLC (PT-BR only)</title>
+      <link>https://bmeneg.com/posts/limitacoes-pitfalls-memoria-nand/</link>
+      <pubDate>Wed, 11 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://bmeneg.com/posts/limitacoes-pitfalls-memoria-nand/</guid>
+      <description>O suporte às memórias NAND na árvore principal do Kernel do Linux se mostram bastante maduras para o uso do total potencial destas memórias, porém, mesmo o suporte sendo bastante robusto e completo alguns problemas relacionados ao chip/arquitetura das memórias tem trazido vários problemas às aplicações, principalmente àquelas que rodam sobre Single Board Computers, como Cubieboard/truck ou qualquer outra que possuí memória não volátil deste tipo, e que geralmente não estão alinhadas diretamente à linha principal do Kernel possuindo uma versão mais antigas com adaptações (patches) específicas para aquela SBC.</description>
+    </item>
+    
+    <item>
+      <title>Chroot e QEMU para ARM em x86 (PT-BR only)</title>
+      <link>https://bmeneg.com/posts/chroot-qemu-arm/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://bmeneg.com/posts/chroot-qemu-arm/</guid>
+      <description>De forma breve tentarei contextualizar a necessidade que tive para chegar a esta técnica que irei apresentar, que sem dúvida, quando descobri, fiquei rindo por algum tempo sozinho.
+A necessidade Como todos vocês devem saber (baste dar uma lida rápida sobre mim) trabalho com Linux Embarcado, principalmente sobre plataformas ARM, e de tempos em tempos sou responsável por gerar a imagem do sistema completo (bootloader + kernel + rootfs + aplicações da solução proprietária) de uma forma que facilite no ambiente de produção.</description>
+    </item>
+    
+  </channel>
+</rss>
