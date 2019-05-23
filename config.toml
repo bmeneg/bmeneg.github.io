@@ -1,0 +1,17 @@
+baseURL = "https://bmeneg.com/"
+languageCode = "en-us"
+title = "bmeneg's blog"
+theme = "xmin"
+
+[permalinks]
+    post = "/post/:slug"
+
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[menu.main]]
+name = "About"
+url = "/about/"
+weight = 2
