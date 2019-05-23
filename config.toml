@@ -4,7 +4,7 @@ title = "bmeneg's blog"
 theme = "xmin"
 
 [permalinks]
-    post = "/post/:slug"
+post = "/post/:slug"
 
 [[menu.main]]
 name = "Home"
