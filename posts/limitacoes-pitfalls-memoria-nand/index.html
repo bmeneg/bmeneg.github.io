@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Limitações e pitfalls das memórias NAND SLC/MLC/TLC (PT-BR only) | bmeneg&#39;s blog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Limitações e pitfalls das memórias NAND SLC/MLC/TLC (PT-BR only)</span></h1>
+<h2 class="author">Bruno Meneguele</h2>
+<h2 class="date">2016/05/11</h2>
+</div>
+
+<main>
+
+
+<p>O suporte às memórias NAND na árvore principal do Kernel do Linux se mostram
+bastante maduras para o uso do total potencial destas memórias, porém, mesmo o
+suporte sendo bastante robusto e completo alguns problemas relacionados ao
+<em>chip</em>/arquitetura das memórias tem trazido vários problemas às aplicações,
+principalmente àquelas que rodam sobre <em>Single Board Computers</em>, como
+Cubieboard/truck ou qualquer outra que possuí memória não volátil deste tipo, e
+que geralmente não estão alinhadas diretamente à linha principal do Kernel
+possuindo uma versão mais antigas com adaptações (<em>patches</em>) específicas para
+aquela SBC.</p>
+
+<p>As memórias NAND são dividas em algumas categorias, as quais surgiram em tempos
+diferentes: NAND <em>Single-Level Cells</em> (SLC), <em>Multi-Level Cells</em> (MLC) e
+<em>Triple-Level Cells</em> (TLC). Os problemas encontrados aos chips da categoria MLC
+se aplicam igualmente ou até mesmo se agravam nos TLCs, portanto qualquer
+referência feita à MLC implicará à TLC também.</p>
+
+<p>Estas categorias dizem respeito a quantidade de níveis (de tensão) que cada
+célula de memória pode assumir, que está diretamente relacionada a quantidade
+de bits que cada célula de memória armazena. Mas para entender isso melhor
+vamos primeiro explicar um pouco da arquitetura da memória NAND.</p>
+
+<h2 id="tecnologia-e-arquitetura-nand">Tecnologia e arquitetura NAND</h2>
+
+<p>Na memória NAND os bits são codificados por níveis de tensão, os quais são
+todos iniciados em <strong>1</strong> e a programação (operação PROGRAM) desta memória
+implica na mudança desse estado para <strong>0</strong> e o caminho inverso, de <strong>0</strong> para
+<strong>1</strong>, é feito pela operação ERASE. As operações possíveis sobre esta memória
+não agem sobre cada bit, mas sim sobre uma quantidade de memória fixa e
+diferente para cada operação, sendo estas quantidades:</p>
+
+<ul>
+<li>PAGE: unidade mínima para a operação PROGRAM;</li>
+<li>BLOCK: unicadade mínimo para a operação ERASE.</li>
+</ul>
+
+<p><center><img src="/imgs/nand-arch.png" alt="Arquitetura interna NAND" /></center></p>
+
+<p>Na imagem é possível observar quão lenta é a operação de ERASE em comparação
+com a PROGRAM, sendo assim, é importante realizar o máximos de PROGRAMs
+possível, antes de realizar um ERASE.</p>
+
+<p>Cada bit (ou bits dependendo da categoria da memória) é armazenado em uma
+célula da memória, sendo que a quantidade de bits presente na célular varia com
+a categoria da NAND e seu estado muda de acordo a tensão aplicada. A figura
+seguinte mostra este esquema que parece ser um tanto estranho quando comparado
+com os tipos convencionais de memória.</p>
+
+<p><center><img src="/imgs/nand-cell.png" alt="Células NAND" /></center></p>
+
+<h2 id="os-problemas">Os problemas</h2>
+
+<p>O problema surge justamente neste ponto: quando <em>uma célula passa a representar
+o estado de dois ou mais bits</em>. Isto pode parecer muito bom, já que a
+quantidade de memória pode ser dobrada (MLC), triplicada (TLC), sem a mudança
+do tamanho físico da memória, mas algo que não é muito levado em conta são os
+problemas para estabelecer esta quantidade de subníveis de tensão.</p>
+
+<p>Considerando que as memórias NAND são alimentadas a um nível de 3.3V,
+estabelecer 4 subníveis ou até mesmo 8 (no caso de TLC) passa a ser um desafio,
+pois quanto maior o número de níveis, menor a distância dos limites de tensão
+para cada nível. Contando que as memórias NAND possuem um desgaste natural a
+cada operação feita (tanto na escrita como na leitura) a instabilidade do nível
+de tensão aumenta conforme o tempo de uso passa. O problema de <em>bit flip</em> passa
+a acontecer com maior frequência quanto maior o número de níveis de tensão por
+célula, pois qualquer pequena variação pode causar este <em>flip</em>, ainda mais
+quando a memória esta desgastada. Outro problema é a retensão dos dados, a qual
+varia gravemente de acordo a temperatura do ambiente e também pela leitura e
+escrita de dados adjacentes, sendo este último chamado de <em>operation
+disturbance</em>.</p>
+
+<p>Infelizmente, <em>operation disturbance</em> pode ocorrer em qualquer categoria de
+memórias NAND, mas se mostra muito mais presente nas memórias de células
+multinível (MLC e TLC). A figura a seguir exemplifica de maneira simples o que
+é este problema. E de forma resumida pode ser dito que isso ocorre pois a
+mudança de tensão em um ponto gera pequenas variações de tensão por pequeno
+período de tempo nas regiões adjacentes à modificada.</p>
+
+<p><center>
+<img src="/imgs/nand-operation-disturbance.png" alt="Disturbio causado em regiões vizinhas" />
+</center></p>
+
+<p>Outro problema muito sério quanto a isso é que com a forma como estas memórias
+foram projetadas pode ocorrer que diferentes bits dentro de uma mesma célula
+pertencer a PAGEs diferentes. Desta forma um único erro (através de <em>bit flip</em>
+por exemplo) pode forçar ao ECC (<em>Error Correction Code</em>) a realizar mais
+operações sobre regiões variadas a memória, desgastando ainda mais a memória.
+Além disso, como é possível que dados em diferentes blocos sejam corrompidos de
+uma única vez é possível também que diferentes arquivos em um sistema de
+arquivo seja corrompido pela falha de uma única célula, gerando erros
+totalmente não relacionados.</p>
+
+<p><center><img src="/imgs/nand-paired-pages.png" alt="Páginas pareadas" /></center></p>
+
+<p>Sendo assim, além do gerenciamento de escrita e leitura em excesso na memória
+ser extremamente necessário, tanto pela aplicação como pelo sistema de
+arquivos, deve-se levar em conta estas peculariedades da memória. No entanto os
+produtores dos chips NAND desconsideram muitas questões que seriam extremamente
+úteis e necessárias aos desenvolvedores de drivers para lidar com estes
+problemas. Como exemplo de questões que poderiam ajudar: apresentar uma
+descrição de como alterar (se possível) os intervalos de tensão que definem os
+níveis da célula em caso de desgaste de memória, a descrição do que ocorre
+quando a energia é rompida no meio da alguma operação e a elaboração de um
+padrão entre fabricantes, a qual não existe ainda.</p>
+
+<h2 id="possíveis-soluções">Possíveis soluções</h2>
+
+<p>Para alguns destes problemas há soluções, porém, muitas delas são meramente
+teóricas e de difícil implementação e, consequentemente, teste, estando
+diretamente relacionadas aos drivers e aos sistemas de arquivos específicos
+para memórias NAND, os quais devem ser utilizados <strong>sempre</strong> que possível, pois
+o uso de um sistema de arquivo não preparado para esse tipo de memória (como o
+EXT3 ou 4) diminuirá drasticamente a vida útil desta. Mas também é importante
+observar que mesmo estes sistemas de arquivos, sendo mais recomendados que os
+tradicionais, ainda não se mostram totalmente preparados para lidar com
+memórias de células multiníveis, como é possível ver neste
+<a href="http://www.linux-mtd.infradead.org/doc/ubifs.html#L_ubifs_mlc">link</a> (obrigado
+<a href="http://sergioprado.org/">Sérgio Prado</a> por esta informação adicional).</p>
+
+<p>Embora constantes estudos e desenvolvimentos estão sendo feitos sobre possíveis
+soluções, ainda é preferível evitar o uso das <strong>memórias multi-nivel</strong> como
+fonte <strong>principal</strong> de armazenamento, pois muitas das soluções conhecidas
+limitariam o uso da memória, algumas em relação ao espaço lógico disponível e
+outras em relação ao desempenho. Sendo assim, se for necessário utilizar uma
+memória NAND como armazenamento principal para seu sistema, escolha o uso de
+NANDs SLC se possível.</p>
+
+<h2 id="comentários-finais">Comentários finais</h2>
+
+<p>Este problema enfrentei e ainda enfrento, principalmente por causa da SBC que
+foi escolhida para a solução de onde trabalho e o requisito do sistema
+operacional utilizar a memória NAND como armazenamento principal, e que
+eventualmente, depois certo tempo de uso, vários problemas de <em>bad blocks</em>
+surgem por todo o sistema. Na escolha da SBC não foi levada em consideração
+estes possíveis problemas de memória, por isso fiquem sempre atentos nestas
+questões para futuras decisões! Verifiquem como está o suporte para tal no
+Kernel considerado estável para seu SBC.</p>
+
+<p>Vou ficando por aqui sobre este assunto. Qualquer dúvida ou crítica só enviar
+um comentário ou entrar em contato em minhas redes sociais.</p>
+
+<p>Até mais.</p>
+
+</main>
+
+  <footer>
+  
+  
+  </footer>
+  </body>
+</html>
+
