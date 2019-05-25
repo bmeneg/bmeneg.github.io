@@ -2,7 +2,8 @@ baseURL = "https://bmeneg.com/"
 languageCode = "en-us"
 title = "bmeneg's blog"
 theme = "xmin"
-disableKinds = ["RSS"]
+disqusShortname = "bmeneguele"
+footnotereturnlinkcontents = "↩"
 
 [params]
 description = "A website built through Hugo and blogdown."
@@ -19,8 +20,8 @@ weight = 1
 [[menu.main]]
 name = "About"
 url = "/about/"
-weight = 2
+weight = 3
 
 [[menu.main]]
-name = "Subscribe"
+name = "RSS"
 url = "/index.xml"

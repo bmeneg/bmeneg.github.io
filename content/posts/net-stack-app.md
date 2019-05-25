@@ -43,7 +43,7 @@ implemented for now.
 
 The following code will generate the executable named _http-server_:
 
-```
+```go
 package main
 
 import (
@@ -65,7 +65,7 @@ func main() {
 
 With that code running you are already ready to receive requests:
     
-```
+```shell
 $ go install
 $ http-server
 Starting HTTP server...
@@ -74,7 +74,7 @@ Listening...
 
 And in another shell:
 
-```
+```shell
 $ curl http://localhost:8080
 You have requested: /
 ```
@@ -114,14 +114,16 @@ Which is composed of four main parts:
 
 Using our brand new server we can check the request with:
 
-    $ curl -v http://127.0.0.1:8080
-    ...
-    > GET / HTTP/1.1
-    > Host: 127.0.0.1:8080
-    > User-Agent: curl/7.61.1
-    > Accept: */*
-    >
-    ...
+```shell
+$ curl -v http://127.0.0.1:8080
+...
+> GET / HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: curl/7.61.1
+> Accept: */*
+>
+...
+```
 
 Some other informations are printed out with this command, but the request is
 only these four lines.
@@ -144,15 +146,17 @@ Which is composed by the following fields:
 The same command used to check request headers we can use to check the
 response's ones:
 
-    $ curl -v http://127.0.0.1:8080
-    ...
-    < HTTP/1.1 200 OK
-    < Date: Wed, 22 May 2019 04:06:21 GMT
-    < Content-Length: 22
-    < Content-Type: text/plain; charset=utf-8
-    <
-    You have requested: /
-    ...
+```shell
+$ curl -v http://127.0.0.1:8080
+...
+< HTTP/1.1 200 OK
+< Date: Wed, 22 May 2019 04:06:21 GMT
+< Content-Length: 22
+< Content-Type: text/plain; charset=utf-8
+<
+You have requested: /
+...
+```
 
 ## Stack analysis
 
@@ -166,25 +170,29 @@ You can keep listening your requests and responses in real-time with a tool
 called _tcpflow_ which keep track of all TCP connections being performed
 through one of your network interfaces:
 
-    # tcpflow -c -i <interface>
+```shell
+# tcpflow -c -i <interface>
+```
 
 While in the another shell (or even through a normal browser) you keep
 sending requests to your server.
 
-    # tcpflow -c -i lo
-    ...
-    ::1.40138-::1.08080: GET / HTTP/1.1
-    Host: 127.0.0.1:8080
-    User-Agent: curl/7.61.1
-    Accept: */*
+```shell
+# tcpflow -c -i lo
+...
+::1.40138-::1.08080: GET / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: curl/7.61.1
+Accept: */*
 
 
-    ::1.08080-::1.40138: HTTP/1.1 200 OK
-    Date: Wed, 22 May 2019 04:32:35 GMT
-    Content-Length: 22
-    Content-Type: text/plain; charset=utf-8
+::1.08080-::1.40138: HTTP/1.1 200 OK
+Date: Wed, 22 May 2019 04:32:35 GMT
+Content-Length: 22
+Content-Type: text/plain; charset=utf-8
 
-    You have requested: /
+You have requested: /
+```
 
 Keep in mind that HTTP is an *application protocol* and has no clue about IP
 addresses. I mean, although it has the _Host_ header it is used to pass the

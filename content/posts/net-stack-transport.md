@@ -87,6 +87,16 @@ for the window size field together with the other two variables.
 
 #### Sequence number
 
+The idea is not to get in too much details on that, thus what I can say about
+sequence numbers is that it basically represents the order in which such packet
+was sent, being the number the last byte of that packet counted since the
+beginning of the whole data being sent.
+
+For example, consider a data of a thousand bytes, which was decided fragmented
+in ten smaller packets of a hundred bytes each:
+
+`$$1000{bytes} = 10\times 100{bytes}$$`
+
 ## Recap from application layer packet
 
 We are going to take the results we got in [part 1](/posts/net-stack-app) of
