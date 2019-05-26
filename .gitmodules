@@ -1,7 +1,3 @@
-[submodule "themes/xmin"]
-	path = themes/xmin
-	url = https://github.com/bmeneguele/bmeneguele.github.io
-    branch = xmin-theme
 [submodule "public"]
 	path = public
 	url = https://github.com/bmeneguele/bmeneguele.github.io
