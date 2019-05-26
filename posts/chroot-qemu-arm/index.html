@@ -6,7 +6,11 @@
     <title>Chroot e QEMU para ARM em x86 (PT-BR only) | bmeneg&#39;s blog</title>
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/fonts.css" />
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" />
+=======
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" rel="stylesheet" />
+>>>>>>> Stashed changes
 
   </head>
 
@@ -83,13 +87,21 @@ específica X. Mas vamos com calma.</p>
 <p>Para começar, vamos supor que precisamos criar uma imagem de um sistema de arquivos
 ARM para depois poder utilizar na plataforma ARM.</p>
 
+<<<<<<< Updated upstream
 <pre><code>$ dd of=arm-rootfs.img bs=1 seek=4G count=0
+=======
+<pre><code class="language-shell">$ dd of=arm-rootfs.img bs=1 seek=4G count=0
+>>>>>>> Stashed changes
 # mkfs.ext4 -F arm-rootfs.img
 </code></pre>
 
 <p>Após isso apenas monte esta imagem em qualquer local.</p>
 
+<<<<<<< Updated upstream
 <pre><code>$ mkdir arm-chroot
+=======
+<pre><code class="language-shell">$ mkdir arm-chroot
+>>>>>>> Stashed changes
 # mount -o loop arm-rootfs arm-chroot/
 </code></pre>
 
@@ -98,14 +110,22 @@ ARM</a>),
 descompacte dentro da pasta que foi criada e que será onde acessaremos como
 chroot.</p>
 
+<<<<<<< Updated upstream
 <pre><code># tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot
+=======
+<pre><code class="language-shell"># tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactação
 paralela, porém é necessário possuir alguma aplicação com tal suporte instalado,
 como o <strong>pigz</strong>.</p>
 
+<<<<<<< Updated upstream
 <pre><code># tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot
+=======
+<pre><code class="language-shell"># tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>A partir de agora é onde a <em>mágica</em> acontece: baixe a versão estática do binário
@@ -117,7 +137,11 @@ a qual provavelmente deve existir no repositório da sua distribuição.</p>
 <p>Uma vez instalado no sistema o <strong>qemu-arm-static</strong>, faça uma cópia do mesmo para
 o sistema ARM:</p>
 
+<<<<<<< Updated upstream
 <pre><code># cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static
+=======
+<pre><code class="language-shell"># cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>Feito isso, está na hora de definir este como interpretador de executáveis que
@@ -125,25 +149,41 @@ foram compilados para ARM e que estão presentes sobre o seu Linux Kernel para
 x86. Para fazer isso é necessário você possuir o módulo <strong>binfmt_misc</strong>
 devidamente habilitado em seu kernel.</p>
 
+<<<<<<< Updated upstream
 <pre><code># zcat /proc/config.gz | grep -i binfmt_misc
+=======
+<pre><code class="language-shell"># zcat /proc/config.gz | grep -i binfmt_misc
+>>>>>>> Stashed changes
 CONFIG_BINFMT_MISC=y
 </code></pre>
 
 <p>Certifíque-se que o mesmo foi montado.</p>
 
+<<<<<<< Updated upstream
 <pre><code># ls /proc/sys/fs/binfmt_misc/
+=======
+<pre><code class="language-shell"># ls /proc/sys/fs/binfmt_misc/
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>Caso não, monte-o com:</p>
 
+<<<<<<< Updated upstream
 <pre><code># mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc 
+=======
+<pre><code class="language-shell"># mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc 
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>Como já dito anteriormente, com este suporte é possível registrar um
 interpretador específico para executar/interpretar os binários de outras
 plataformas, como ARMv7. O comando para registrar é um tanto diferente:</p>
 
+<<<<<<< Updated upstream
 <pre><code># echo ':arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:' &gt; /proc/sys/fs/binfmt_misc/register
+=======
+<pre><code class="language-shell"># echo ':arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:' &gt; /proc/sys/fs/binfmt_misc/register
+>>>>>>> Stashed changes
 </code></pre>
 
 <p>Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do
@@ -192,7 +232,11 @@ bits e compilados para ARM</em> devem ser executados pelo <strong>interpreter</s
 <p>Sendo assim, o sistema ARM em arm-chroot/ já está pronto para ser utilizado,
 agora basta fazer o processo comum do chroot.</p>
 
+<<<<<<< Updated upstream
 <pre><code># mount -t proc /proc arm-chroot/proc
+=======
+<pre><code class="language-shell"># mount -t proc /proc arm-chroot/proc
+>>>>>>> Stashed changes
 # mount -o bind /dev arm-chroot/dev
 # mount -o bind /dev/pts arm-chroot/dev/pts
 # mount -o bind /sys arm-chroot/sys
@@ -219,12 +263,20 @@ Valew a todos e até o próximo post! \o.</p>
 
   <footer>
   <script src="//yihui.name/js/math-code.js"></script>
+<<<<<<< Updated upstream
 <script async src="//cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+=======
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+>>>>>>> Stashed changes
 <script async src="//yihui.name/js/center-img.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/go.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/shell.min.js"></script>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 <script>
     hljs.configure({languages: []});
     hljs.initHighlightingOnLoad();
