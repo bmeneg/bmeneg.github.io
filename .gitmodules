@@ -2,3 +2,7 @@
 	path = public
 	url = https://github.com/bmeneguele/bmeneguele.github.io
 	branch = master
+[submodule "themes/xmin"]
+	path = themes/xmin
+	url = git@github.com:bmeneguele/bmeneguele.github.io.git
+	branch = xmin-theme
