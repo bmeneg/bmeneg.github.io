@@ -2,7 +2,6 @@
 title: "Limitações e pitfalls das memórias NAND SLC/MLC/TLC (PT-BR only)"
 author: "Bruno Meneguele"
 date: 2016-05-11
-draft: false
 ---
 
 O suporte às memórias NAND na árvore principal do Kernel do Linux se mostram

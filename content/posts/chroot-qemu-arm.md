@@ -54,14 +54,14 @@ específica X. Mas vamos com calma.
 Para começar, vamos supor que precisamos criar uma imagem de um sistema de arquivos
 ARM para depois poder utilizar na plataforma ARM.
 
-```
+```shell
 $ dd of=arm-rootfs.img bs=1 seek=4G count=0
 # mkfs.ext4 -F arm-rootfs.img
 ```
 
 Após isso apenas monte esta imagem em qualquer local.
 
-```
+```shell
 $ mkdir arm-chroot
 # mount -o loop arm-rootfs arm-chroot/
 ```
@@ -71,7 +71,7 @@ ARM](br2.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz)),
 descompacte dentro da pasta que foi criada e que será onde acessaremos como
 chroot.
 
-```
+```shell
 # tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot
 ```
 
@@ -79,7 +79,7 @@ Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactaçã
 paralela, porém é necessário possuir alguma aplicação com tal suporte instalado,
 como o **pigz**.
 
-```
+```shell
 # tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot
 ```
 
@@ -92,7 +92,7 @@ a qual provavelmente deve existir no repositório da sua distribuição.
 Uma vez instalado no sistema o **qemu-arm-static**, faça uma cópia do mesmo para
 o sistema ARM:
 
-```
+```shell
 # cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static
 ```
 
@@ -101,20 +101,20 @@ foram compilados para ARM e que estão presentes sobre o seu Linux Kernel para
 x86. Para fazer isso é necessário você possuir o módulo **binfmt_misc** 
 devidamente habilitado em seu kernel.
 
-```
+```shell
 # zcat /proc/config.gz | grep -i binfmt_misc
 CONFIG_BINFMT_MISC=y
 ```
 
 Certifíque-se que o mesmo foi montado.
 
-```
+```shell
 # ls /proc/sys/fs/binfmt_misc/
 ```
 
 Caso não, monte-o com:
 
-```
+```shell
 # mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc 
 ```
 
@@ -122,7 +122,7 @@ Como já dito anteriormente, com este suporte é possível registrar um
 interpretador específico para executar/interpretar os binários de outras 
 plataformas, como ARMv7. O comando para registrar é um tanto diferente:
 
-```
+```shell
 # echo ':arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:' > /proc/sys/fs/binfmt_misc/register
 ```
 
@@ -169,7 +169,7 @@ bits e compilados para ARM_ devem ser executados pelo **interpreter**.
 Sendo assim, o sistema ARM em arm-chroot/ já está pronto para ser utilizado,
 agora basta fazer o processo comum do chroot.
 
-```
+```shell
 # mount -t proc /proc arm-chroot/proc
 # mount -o bind /dev arm-chroot/dev
 # mount -o bind /dev/pts arm-chroot/dev/pts
