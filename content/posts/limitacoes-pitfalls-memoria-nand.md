@@ -1,5 +1,5 @@
 ---
-title: "Limitações e pitfalls das memórias NAND SLC/MLC/TLC (PT-BR only)"
+title: "Limitações e pitfalls de memórias NAND (PT-BR only)"
 author: "Bruno Meneguele"
 date: 2016-05-11
 ---
