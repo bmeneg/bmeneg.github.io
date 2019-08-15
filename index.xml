@@ -6,10 +6,20 @@
     <description>Recent content in Home on bmeneg&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 May 2019 00:31:08 -0300</lastBuildDate>
+    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://bmeneg.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Network stack - Part 1: Application layer</title>
+      <link>https://bmeneg.com/posts/net-stack-app/</link>
+      <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://bmeneg.com/posts/net-stack-app/</guid>
+      <description>One of the things I have been studying in the past few days is how the networking stack works in our lives nowadays:
+ What are the standard protocols? How these protocols work? How everything are integrated?  These questions guided me towards a &amp;ldquo;playing around&amp;rdquo; exercise: build a simple HTTP server and follow all the steps that a simple data packet goes throughout the networking stack (top-down approach).</description>
+    </item>
     
     <item>
       <title>Who is</title>

@@ -3,6 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://bmeneg.com/</loc>
+    <lastmod>2019-08-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bmeneg.com/posts/net-stack-app/</loc>
+    <lastmod>2019-08-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bmeneg.com/posts/</loc>
+    <lastmod>2019-08-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://bmeneg.com/about/</loc>
     <lastmod>2019-05-23T00:31:08-03:00</lastmod>
   </url>
@@ -19,17 +35,6 @@
   
   <url>
     <loc>https://bmeneg.com/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://bmeneg.com/</loc>
-    <lastmod>2019-05-23T00:31:08-03:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bmeneg.com/posts/</loc>
-    <lastmod>2016-05-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
