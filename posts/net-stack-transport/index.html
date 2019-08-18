@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network stack - Part 2: Transport layer | bmeneg&#39;s blog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/index.xml">RSS</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Network stack - Part 2: Transport layer</span></h1>
+<h2 class="author">Bruno Meneguele</h2>
+
+</div>
+
+<main>
+
+
+<p>Ok, continuing our journey through the network stack downwards we just reached
+the <em>transport layer</em>, where some of the <em>magics</em> behind the scenes happen.
+This layer is where two of the most well known protocols are, being them TCP
+(<em>Transmission Control Protocol</em>) and UDP (<em>User Datagram Protocol</em>).</p>
+
+<p>These two protocols are used to the same purpose: <strong>provide a way to two
+different applications (i.e. a HTTP client and a server) to communicate between
+them accross the whole internet (or even in the same [local] system)</strong>.</p>
+
+<p>With that said, the single question arises: <em>how the hell these guys work?</em>.
+And that is exactly what I am going to try to explain and show you.</p>
+
+<h2 id="tcp-and-udp-internals">TCP and UDP internals</h2>
+
+<p>These two protocols are intended to work for the same main purpose, as stated
+earlier, but they defer tremendously when comes to &ldquo;controlling&rdquo; the connection
+itself, being that one - TCP - tries to keep the connection as reliable as
+possible and transparent to the application, while the other - UDP - just give
+up from everything on behalf of simplicity and performance, leaving the burden
+of implementing some of the controlling mechanisms to the user&rsquo;s application,
+if desired.</p>
+
+<p>The way both protocols keep track of application&rsquo;s address is through <strong>port
+numbers</strong>, which are controlled by the operating system and have a finite
+amount available (16 bits = 65535). These ports are basically how house/street
+numbers work: if you wish to talk to someone in a specific house, you need to
+reach him in that specific number, but, at the same time, the application must
+be waiting (listening) for someone in that specific port to allow the
+communication to happen.</p>
+
+<p>But wait, before we start to digress about that in a really high level, lets
+take a look in how these information are organized, one protocol at a time, to
+highlight the differences between them.</p>
+
+<h3 id="tcp-overview-rfc-793-https-tools-ietf-org-html-rfc793">TCP - Overview (<a href="https://tools.ietf.org/html/rfc793">RFC 793</a>)</h3>
+
+<p>The first thing to know is that each step downwards the stack a few bytes are
+added to our whole packet size. That is due to header fields that are being
+prefixed/suffixed each time a protocol manipulates it. For instance, TCP
+protocol might add to our packet&rsquo;s length up to 60 bytes of information.</p>
+
+<p>Below is an image representing all header fields available:</p>
+
+<p><center><img src="/imgs/tcp-headers.png" alt="TCP Headers" /></center></p>
+
+<p>As the protocol&rsquo;s name already states, TCP is basically a protocol to control
+the delivery of packets through the network to end user applications. What most
+shines herein is the fact that TCP guarantees certain principles to the application
+layer, these being:</p>
+
+<ul>
+<li>Connection establishment;</li>
+<li>Reliable data transfer, through:
+
+<ul>
+<li><em>sequence number</em> (SEQ) header field;</li>
+<li><em>acknowledgement number</em> (ACK) header field;</li>
+<li>Flow control mechanism:
+
+<ul>
+<li>Using <em>window</em> field.</li>
+</ul></li>
+</ul></li>
+<li>Bandwidth congestion control mechanism, through:
+
+<ul>
+<li>ACK field and some internal timers.</li>
+</ul></li>
+</ul>
+
+<p>As you can see, all the headers are basically used to control and handle a
+transparent communication channel among applications within the internet.</p>
+
+<p>But at the same time, <strong>why is these guarantees even necessary?</strong> Well,
+basically because the internet itself is not a reliable system: it has
+uncountable failures down the road with bogus systems, malfunctioning
+equipment, broken or totally filled/busy links, and so forth. Depending on the
+channel being used to transmit the packet it might be pretty hard to reach a
+destination application, geographically distance, without hitting a single
+issue and that is the reasoning behind all these control flags, fields and
+mechanisms.</p>
+
+<p>It is also valid to remember that although the network stack still have more
+protocols underneath transport layer, TCP is the one caring the responsibility
+to deliver a transparent and reliable network to the application.</p>
+
+<p>Now, lets talk about these three guarantees.</p>
+
+<h3 id="tcp-connection-establishment">TCP - Connection establishment</h3>
+
+<p>This step is also known as <em>handshake</em>, which provides enough information to
+keep the connection open and alive until one of the parts closes it. This step
+brings some guarantees that help and can facilitate the architecture behind the
+next protocol&rsquo;s features.</p>
+
+<p>Although many people don&rsquo;t really pay attention to this step I think it&rsquo;s worth
+mentioning since some networking security issues are directly related to it.
+But at the same time, I won&rsquo;t getting in much detail about the security aspect
+of that, it&rsquo;s subject for another whole series of posts.</p>
+
+<p>Before the handshake starts the server side of the connection must bind to and
+listen to a specific port on its system. Once it&rsquo;s ready for receiving
+connections (represented to a call to the <em>listen()</em> system call) the client
+can actively open a connection to the server by calling the <em>connect()</em> system
+call. The connection request is then received by the server system which waits
+for a direct call to <em>accept()</em> from the server application, and once it&rsquo;s
+issued the <em>3-way handshake</em> can start.</p>
+
+<h4 id="3-way-handshake">3-way handshake</h4>
+
+<p>This handshake set the values for both directions packets&rsquo; sequence numbers,
+which has its first value set randomly and also guarantees both sides are aware
+that if they wish to finish the connection they must start the termination
+process, and not just drop the other without any warnings (although it doesn&rsquo;t
+prevent on endpoint or another to drop due to connection issues).</p>
+
+<p>At client active open connection time a SYN packet is sent to the server with a
+random sequence number (<code>$SEQ_{cli}$</code>) chosen by the client. The server then
+sends a reply, SYN+ACK packet, with its acknowledgment number set to the
+clients sequence number plus one (<code>$SEQ_{cli} + 1$</code>), and the packet sequence
+number is also set to a randomly generated number (<code>$SEQ_{server}$</code>). Then,
+finally, the client replies with an ACK packet containing the acknowledge
+number set to <code>$SEQ_{server} + 1$</code> and the sequence number set to <code>$SEQ_{cli} +
+1$</code>.</p>
+
+<p>As I said before, this process helps to keep the connection alive, but at the
+same time open some security holes allowing attackers perform attacks like DoS,
+issuing multiple SYN packets at the same time. But hey, that&rsquo;s a concern for
+another post. Lets move on.</p>
+
+<h3 id="tcp-reliable-data-transfer">TCP - Reliable Data Transfer</h3>
+
+<p>As I said before, there are three variables being monitored to keep the data
+transfer between applications reliable: packet&rsquo;s sequence number,
+acknowledgment number and the mechanism of flow control, which basically checks
+for the window size field together with the other two variables.</p>
+
+<h4 id="sequence-number">Sequence number</h4>
+
+<p>Lets consider the sequence number first chosen in the handshake were 0 for both
+directions, this will make our discussion easier, it represents the order in
+which such packet was sent, being the number the last byte of that packet
+counted since the beginning of the whole data being sent.</p>
+
+<p>For example, consider a data of a thousand bytes, which was decided to be
+fragmented in ten smaller packets of a hundred bytes each:</p>
+
+<p><code>$$1000{bytes} = 10\times 100{bytes}$$</code></p>
+
+<p>For each chunk of 100 bytes the sequence number is increased by that amount in
+that specific packet.</p>
+
+<h4 id="acknowledgment-number">Acknowledgment number</h4>
+
+<p>This number is used in the ACK packet, which determines the last packet&rsquo;s
+sequence number received. If the last packet received had SEQ equivalent to
+200, than the acknowledgment number for the ACK packet will be <code>$200 + 1 =
+201$</code>, meaning that the packet with SEQ 200 was received and it&rsquo;s now waiting
+for the next packet starting from SEQ 201.</p>
+
+<h4 id="flow-control">Flow control</h4>
+
+<p>Flow control take in consideration the remaining size of sender&rsquo;s data buffer,
+represented by the <em>window</em> field in the header, in other words, how many bytes
+are still left to be filled in the sender&rsquo;s data queue, thus the other side of
+the connection know how many bytes he can send within the next packet without
+overflowing the buffer for that sender.</p>
+
+<p>Bundling the last <em>window</em> number with both last SEQ and ACK number it&rsquo;s
+possible to avoid flow issues due to overflowing buffers and, consequently,
+duplicate packets in the channel due to retransmission.</p>
+
+<h3 id="tcp-congestion-control">TCP - Congestion control</h3>
+
+<p>As a starting point, TCP tries to avoid any unnecessary data transmission
+between connection endpoints with the go-back-n approach, which specifies an
+amount of bytes the sender can send before require waiting for an ACK packet
+from receiver.</p>
+
+<p>But the real congestion control happens with the increase of this maximum
+amount of bytes not acknowledged in transit threshold, which is doubled each
+time the sender successfully receives the receiver&rsquo;s ACK (process known as
+<em>slow start</em>), until to the point a doubled ACK (meaning the last data sent was
+not received) happens and the threshold is then dropped by half of the current
+value, thus dropping the data transmission and possibly helping controlling the
+channel congestion.</p>
+
+<p>The following picture helps to understand the above statement about the
+threshold, took from the Computer Network book from Kurose &amp; Ross.</p>
+
+<p><center><img src="/imgs/tcp-cwnds.png" alt="TCP Congestion Control" /></center></p>
+
+<p>Just for your information, there are more than one algorithms of TCP congestion
+control, each one might have a different focus, resulting in different
+behaviors. As you can see in the last picture, there were two different
+implementations of congestion control algorithms, being one TCP Tahoe and the
+another Reno.</p>
+
+<h3 id="udp-overview-rfc-768-https-tools-ietf-org-html-rfc768">UDP - Overview (<a href="https://tools.ietf.org/html/rfc768">RFC 768</a>)</h3>
+
+<p>Different from what we have seen about TCP, UDP is the smaller and simpler one.
+Its focus is basically in performance. All the controlling mechanisms are left
+to the application layer handle, in case it feels it&rsquo;s necessary somehow.</p>
+
+<p>And as you may see in the header image below the UDP header doesn&rsquo;t have
+anything else other than the basic fields that a transport protocol should
+handle: <em>source</em> and <em>destination</em> port, the length of the header and the
+checksum of the whole datagram.</p>
+
+<p><center><img src="/imgs/udp-headers.png" alt="UDP Headers" /></center></p>
+
+<p>Because of that there isn&rsquo;t much to say about the UDP other than: it is the
+materialization of the most basic concept of what can be a transport layer
+protocol, there aren&rsquo;t any kind of guarantee regarding delivery or link in
+which the packets are being transmitted.</p>
+
+<p>This might seem something bad, or that should never be used, but that&rsquo;s not
+true. There are multiple use cases where UDP is desirable, mostly where some
+packet losses aren&rsquo;t much important or where the application has some kind of
+data correction.</p>
+
+<p>As the time passes the link quality available for normal users are getting
+cheaper and better, making many UDP users migrate to TCP, since the overhead
+added are relatively also getting cheaper. That&rsquo;s more a judgment call
+considering your project&rsquo;s specifications.</p>
+
+<h2 id="recap-from-application-layer-packet">Recap from application layer packet</h2>
+
+<p>We are now going to take the results we got in <a href="/posts/net-stack-app">part 1</a>
+of this series and literally encapsulate it within the, what is called,
+<em>payload</em> from transport layer protocol&rsquo;s <em>segment</em>.</p>
+
+<h3 id="stack-analysis">Stack analysis</h3>
+
+<p>Using HTTP client side of our application and remembering that HTTP protocols
+uses TCP protocol as its transport layer, the request content that will be held
+by TCP&rsquo;s payload is:</p>
+
+<pre><code>&gt; GET / HTTP/1.1
+&gt; Host: 127.0.0.1:8080
+&gt; User-Agent: curl/7.61.1
+&gt; Accept: */*
+</code></pre>
+
+<p>And to manually check this payload content to the most low level perspective,
+we can use the <em>tcpdump</em> tool to monitor the network interface (<strong>lo</strong> in this
+case, since we are working with <em>localhost</em>) for all incoming and outgoing
+packets in a transport layer point of view, while sending requests to the
+server:</p>
+
+<pre><code># tcpdump --dont-verify-checksums -i lo -X -n -v 'port 8080'
+</code></pre>
+
+<blockquote>
+<p>NOTE: the <code>--dont-verify-checksums</code> option was used to hide checksum errors
+from output. It&rsquo;s required due to the checksum offloading my operating system
+is performing letting the checksum creation responsibility to the network
+device instead of the os&rsquo; TCP stack.</p>
+</blockquote>
+
+<pre><code>19:03:15.252021 IP (tos 0x0, ttl 64, id 31238, offset 0, flags [DF], proto TCP (6), length 130)
+    127.0.0.1.44328 &gt; 127.0.0.1.webcache: Flags [P.], seq 1:79, ack 1, win 512, options [nop,nop,TS val 420155347 ecr 420155347], length 78: HTTP, length: 78
+        GET / HTTP/1.1
+        Host: localhost:8080
+        User-Agent: curl/7.65.3
+        Accept: */*
+
+        0x0000:  4500 0082 7a06 4000 4006 c26d 7f00 0001  E...z.@.@..m....
+        0x0010:  7f00 0001 ad28 1f90 0ef2 af63 f20b 1b81  .....(.....c....
+        0x0020:  8018 0200 fe76 0000 0101 080a 190b 0fd3  .....v..........
+        0x0030:  190b 0fd3 4745 5420 2f20 4854 5450 2f31  ....GET./.HTTP/1
+        0x0040:  2e31 0d0a 486f 7374 3a20 6c6f 6361 6c68  .1..Host:.localh
+        0x0050:  6f73 743a 3830 3830 0d0a 5573 6572 2d41  ost:8080..User-A
+        0x0060:  6765 6e74 3a20 6375 726c 2f37 2e36 352e  gent:.curl/7.65.
+        0x0070:  330d 0a41 6363 6570 743a 202a 2f2a 0d0a  3..Accept:.*/*..
+        0x0080:  0d0a                                     ..
+</code></pre>
+
+<blockquote>
+<p>NOTE: just as a matter of clarification, you can see the string
+&ldquo;127.0.0.1.webcache&rdquo; representing the packet destination address (server IP
+address and TCP port): <em>webcache</em> is a default port name set in
+<em>/etc/services</em> file as an  alias to the port number <strong>8080</strong> that is being
+listened by our HTTP server.</p>
+
+<pre><code>$ grep webcache /etc/services
+webcache        8080/tcp        http-alt        # WWW caching service
+webcache        8080/udp        http-alt        # WWW caching service
+</code></pre>
+</blockquote>
+
+<p>Now, right in the same output from <em>tcpdump</em> we can also get the servers reply
+data:</p>
+
+<pre><code>19:03:15.254766 IP (tos 0x0, ttl 64, id 52968, offset 0, flags [DF], proto TCP (6), length 139)
+    127.0.0.1.webcache &gt; 127.0.0.1.44328: Flags [P.], seq 1:88, ack 79, win 512, options [nop,nop,TS val 420155350 ecr 420155347], length 87: HTTP, length: 87
+        HTTP/1.1 200 OK
+        Content-Length: 22
+        Content-Type: text/plain
+
+        You have requested: /
+        0x0000:  4500 008b cee8 4000 4006 6d82 7f00 0001  E.....@.@.m.....
+        0x0010:  7f00 0001 1f90 ad28 f20b 1b81 0ef2 afb1  .......(........
+        0x0020:  8018 0200 fe7f 0000 0101 080a 190b 0fd6  ................
+        0x0030:  190b 0fd3 4854 5450 2f31 2e31 2032 3030  ....HTTP/1.1.200
+        0x0040:  204f 4b0d 0a43 6f6e 7465 6e74 2d4c 656e  .OK..Content-Len
+        0x0050:  6774 683a 2032 320d 0a43 6f6e 7465 6e74  gth:.22..Content
+        0x0060:  2d54 7970 653a 2074 6578 742f 706c 6169  -Type:.text/plai
+        0x0070:  6e0d 0a0d 0a59 6f75 2068 6176 6520 7265  n....You.have.re
+        0x0080:  7175 6573 7465 643a 202f 0a              quested:./.
+
+</code></pre>
+
+<p>If we start checking all bytes/bits of both segments we&rsquo;re going to see that
+the values there present matches the values presented by <em>tcpdump</em> output in
+the second line, where <em>flags</em>, <em>seq</em>, <em>ack</em>, <em>win</em>, <em>options</em> and <em>length</em> are
+all TCP header fields and its values are decoded.</p>
+
+<p>Before we finish, just for your information, the <em>tcpdump</em> command I used
+prompted many other packets other than these two I presented above, those other
+packets are the SYNs and FINs used to connection establishment and ending
+respectively. I won&rsquo;t describe then in here, but will let it as exercise for
+those interested. Also, reading the manpage of the tool you&rsquo;re going to see a
+way for avoiding them from being prompted.</p>
+
+<p>Now that we have seen either application and transport layers it&rsquo;s time to dive
+into the network layer, where the most well known protocol is placed: Internet
+Protocol (IP).</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script async src="//yihui.name/js/center-img.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/perl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/shell.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
+
+  
+  <hr/>
+  <a href="https://github.com/bmeneguele">Github</a> | <a href="https://twitter.com/bmeneguele">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+
