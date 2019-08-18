@@ -1,6 +1,7 @@
 ---
 title: "Network stack - Part 2: Transport layer"
 author: "Bruno Meneguele"
+date: 2019-08-18
 ---
 
 Ok, continuing our journey through the network stack downwards we just reached
