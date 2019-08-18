@@ -6,10 +6,20 @@
     <description>Recent content in Posts on bmeneg&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 18 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Network stack - Part 2: Transport layer</title>
+      <link>https://bmeneg.com/posts/net-stack-transport/</link>
+      <pubDate>Sun, 18 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://bmeneg.com/posts/net-stack-transport/</guid>
+      <description>Ok, continuing our journey through the network stack downwards we just reached the transport layer, where some of the magics behind the scenes happen. This layer is where two of the most well known protocols are, being them TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).
+These two protocols are used to the same purpose: provide a way to two different applications (i.e. a HTTP client and a server) to communicate between them accross the whole internet (or even in the same [local] system).</description>
+    </item>
     
     <item>
       <title>Network stack - Part 1: Application layer</title>
@@ -38,16 +48,6 @@
       <guid>https://bmeneg.com/posts/chroot-qemu-arm/</guid>
       <description>De forma breve tentarei contextualizar a necessidade que tive para chegar a esta técnica que irei apresentar, que sem dúvida, quando descobri, fiquei rindo por algum tempo sozinho.
 A necessidade Como todos vocês devem saber (baste dar uma lida rápida sobre mim) trabalho com Linux Embarcado, principalmente sobre plataformas ARM, e de tempos em tempos sou responsável por gerar a imagem do sistema completo (bootloader + kernel + rootfs + aplicações da solução proprietária) de uma forma que facilite no ambiente de produção.</description>
-    </item>
-    
-    <item>
-      <title>Network stack - Part 2: Transport layer</title>
-      <link>https://bmeneg.com/posts/net-stack-transport/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://bmeneg.com/posts/net-stack-transport/</guid>
-      <description>Ok, continuing our journey through the network stack downwards we just reached the transport layer, where some of the magics behind the scenes happen. This layer is where two of the most well known protocols are, being them TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).
-These two protocols are used to the same purpose: provide a way to two different applications (i.e. a HTTP client and a server) to communicate between them accross the whole internet (or even in the same [local] system).</description>
     </item>
     
   </channel>
