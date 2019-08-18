@@ -89,7 +89,7 @@ $ curl http://localhost:8080
 You have requested: /
 ```
 
-## Overview on HTTP protocol
+## Overview on HTTP protocol ([RFC 2616](https://tools.ietf.org/html/rfc2616))
 
 Being able to send and receive requests is the first step we need to achieve to
 start analysing the stack. Now we need to get our hands somewhat dirty within
