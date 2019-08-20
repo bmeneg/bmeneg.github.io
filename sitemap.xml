@@ -4,18 +4,23 @@
   
   <url>
     <loc>https://bmeneg.com/</loc>
-    <lastmod>2019-08-18T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bmeneg.com/posts/</loc>
+    <lastmod>2019-08-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://bmeneg.com/posts/awk-tool/</loc>
+    <lastmod>2019-08-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://bmeneg.com/posts/net-stack-transport/</loc>
     <lastmod>2019-08-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://bmeneg.com/posts/</loc>
-    <lastmod>2019-08-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

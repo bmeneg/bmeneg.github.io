@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>awk - possibly the most underrated Unix tool | bmeneg&#39;s blog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/index.xml">RSS</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">awk - possibly the most underrated Unix tool</span></h1>
+<h2 class="author">Bruno Meneguele</h2>
+<h2 class="date">2019/08/19</h2>
+</div>
+
+<main>
+
+
+<p>Yes, that&rsquo;s right&hellip; the title for this post might be one of the biggest truths
+we see nowadays about a tool in Unix space. Although the name doesn&rsquo;t mean
+anything special that describes the tool - it stands for the surname of its
+creators: Alfred Aho, Peter J. Weinberger e Brian Kernighan, and guess what, at
+Bell Labs - it really shines and <em>helps</em> in a niche that many of us work
+everyday: <em>text processing</em>.</p>
+
+<p>Every day we see more about &ldquo;big data&rdquo; processing, &ldquo;data science&rdquo;, &ldquo;business
+intelligence&rdquo;, &ldquo;machine learning&rdquo;, &hellip; but at the very fundamental steps for
+each of this big words there are a common source: <em>text</em>, a <em>lot</em> of text.</p>
+
+<p>Unfortunately we have seen many good tools getting ignored throughout the time
+on behalf of other options that we can arguably say they are &ldquo;fancier&rdquo; or, in
+other words, misleadingly pointed as &ldquo;better&rdquo;. <em>awk</em> is a great example of such
+tool that got forgotten and is very unlikely to be considered in the current
+days by the new developers swamped in buzzwords.</p>
+
+<blockquote>
+<p>NOTE: don&rsquo;t get me wrong, I&rsquo;m not stating these other tools are actually
+worse or not good enough, what I&rsquo;m saying actually is that AWK shouldn&rsquo;t be
+ignored or considered &ldquo;obsolete&rdquo; compared to these tools (like I&rsquo;ve heard
+countless times about C being obsolete because isn&rsquo;t object-oriented, &hellip;
+wait, what?! That&rsquo;s a subject for another post).</p>
+</blockquote>
+
+<p>My goal with this post is to give a <em>really quick overview</em> of that tool, not to
+convince you to use it anywhere, but just to let you know it still exists, it&rsquo;s
+still used and it&rsquo;s still viable to some extent. Perhaps what I&rsquo;m trying to say
+is: <em>stop for a sec and try to ignore any other new framework or tool about
+text processing, try to use what you already have and didn&rsquo;t know</em>.</p>
+
+<h2 id="basic-structure">Basic structure</h2>
+
+<p>As many other Unix tools, <em>awk</em> handles <em>lines</em> as it input source; this lines
+are then matched against the following rule:</p>
+
+<p><center><code>&lt;pattern&gt; { &lt;action&gt; }</code></center></p>
+
+<p>being <code>pattern</code> the match that triggers the <code>action</code>.</p>
+
+<p>Although <code>pattern</code> can assume &ldquo;any&rdquo; value, there are two special ones: <code>BEGIN</code>
+and <code>END</code>.</p>
+
+<pre><code class="language-awk">BEGIN { &lt;action&gt; }
+END { &lt;action&gt; }
+</code></pre>
+
+<p><code>BEGIN</code> triggers an <em>action</em> before the first line is handled, while <code>END</code>
+triggers an <em>action</em> after the last line was processed, see:</p>
+
+<pre><code class="language-shell">$ ls -l
+total 0
+-r--rw-r--. 1 bmeneg bmeneg 0 ago 19 19:43 file1
+-r--r--r--. 1 bmeneg bmeneg 0 ago 19 19:44 file2
+-rwxrw-r--. 1 bmeneg bmeneg 0 ago 19 19:45 file3
+-rw-rw-r--. 1 bmeneg bmeneg 0 ago 19 19:45 file4
+$ cat ../my-awk-program
+BEGIN { print &quot;- START -&quot; }
+{ print &quot;processing new input line ...&quot; }
+END { print &quot;- DONE -&quot; }
+$ ls -l | awk -f ../my-awk-program
+- START -
+processing new input line ...
+processing new input line ...
+processing new input line ...
+processing new input line ...
+processing new input line ...
+- DONE -
+$
+</code></pre>
+
+<h2 id="use-cases">Use cases</h2>
+
+<p>You already can imagine a couple of use cases for a system administrator or an
+automated task, right? Lets try to print the file name and the file owner of
+our current folder.</p>
+
+<pre><code class="language-awk">BEGIN { print &quot;name\towner&quot; }
+END { print &quot;- done -&quot;}
+{ print $9, &quot;\t&quot;, $3 }
+</code></pre>
+
+<p>Now let&rsquo;s run this <em>awk</em> program with our <code>ls -l</code> output:</p>
+
+<pre><code class="language-shell">$ ls -l | awk -f ../my-awk-program
+name    owner
+         
+file1    bmeneg
+file2    bmeneg
+file3    bmeneg
+file4    bmeneg
+- done -
+</code></pre>
+
+<blockquote>
+<p>NOTE: feel free to try adding <code>#!/usr/bin/awk -f</code> to the first line of the
+program and set exec permission to that and then:</p>
+
+<pre><code>$ ls -l | ../my-awk-program
+</code></pre>
+
+<p><em>awk</em> is also an interpreter.</p>
+</blockquote>
+
+<p>First, yes, you can put your <code>BEGIN</code> and <code>END</code> anywhere in the program, every
+pattern is checked for each input (line) processed. And second, <em>fields</em>, the
+ones I used there, <code>$3</code> and <code>$9</code>, can be thought as Bash or Perl function
+parameters, but the values they hold are actually the <em>fields</em> present in the
+input. Consider <em>fields</em> like <em>columns</em> of a row (line), each number represents
+the column number of that specific input being processed. But, unlike other
+programming languages, the dollar sign <code>$</code> doesn&rsquo;t mean it&rsquo;s a <em>variable</em>,
+which is also present in <em>awk</em>, but without <code>$</code>. Also, <em>fields</em> aren&rsquo;t expanded
+within double quotes and that&rsquo;s the reason you see both being placed around
+<code>&quot;\t&quot;</code>.</p>
+
+<p>Now, to demonstrate the use of real variables let me introduce you a more
+elaborated example:</p>
+
+<pre><code class="language-awk">#!//usr/bin/awk -f
+
+BEGIN {
+    # variables can be declared anywhere
+    my_name = &quot;awbot&quot;
+    # remember, awk was made to handle text input
+    print &quot;Hey user, tell me your name: &quot;
+}
+{
+    # NF = number of fields
+    # here we using it as a variable
+    if (NF &gt; 1) {
+        # and here we are using NF value to access the NFth (last) field
+        # creating: 'first + last name' standard
+        user_name = $1&quot; &quot;$NF
+    } else {
+        user_name = $1
+    }
+
+    print &quot;Hi&quot;, user_name &quot;! My name is&quot;, my_name
+    exit
+}
+END {
+    # variables are shared between patterns
+    print &quot;Bye&quot;, user_name
+}
+</code></pre>
+
+<p><em>Wait, what is that??</em> Yes, that&rsquo;s right, <em>awk</em> has all those things you know
+from other languages: conditions, loops, arithmetic operations, variables, &hellip;
+you can indeed play around with the string being used as input to your program,
+you can change the processing step depending the size of the input, or you can
+even change that based on the string per se. For instance, add the following
+rule right after the <code>BEGIN</code>:</p>
+
+<pre><code class="language-awk">/^$/ || /^quit\s*/  {
+    print &quot;Ok, quiting...&quot;
+    exit
+}
+</code></pre>
+
+<p>It will make the program quit whenever you enter an empty line or the word
+<code>quit</code>. As you may have thought, if we&rsquo;re talking about text processing it&rsquo;s
+almost mandatory to know something about <em>regular expressions</em>, this is the
+core engine running behind this whole language.</p>
+
+<blockquote>
+<p>NOTE: regular expression is something really useful and should be known by
+every programmer to some extent, but at the same time it&rsquo;s not always
+suitable for the job: it can turns into a really expensive operation. Make
+sure you know when it should or not be used.</p>
+</blockquote>
+
+<p>You might be wondering what else can be done with <em>awk</em>, well, many things! It
+accepts functions, it has builtin operations for substitution, and so on. The
+amount of things you can do manipulating your input to give you a meaningful or
+a more desirable output is countless. You can find <em>awk</em> being used in many
+places of Linux ecosystem, for instance, within the Linux Kernel sources,
+preparing file names based on file contents within Makefiles or a bunch of
+projects packaging schemes for handling dynamic versioning, translation,
+changelogs, an so on.</p>
+
+<p>To finish, a final example, based on something I run in one of my daily task at
+my job: consider the Linux kernel patch log, you need to retrieve some
+information from patch headers and output it in a different way, not possible
+using git&rsquo;s own <code>--pretty</code> feature. The input would be like this:</p>
+
+<pre><code class="language-shell">$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5
+From 028db3e290f15ac509084c0fc3b9d021f668f877 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds &lt;torvalds@linux-foundation.org&gt;
+Date: Wed, 10 Jul 2019 18:43:43 -0700
+Subject: Revert &quot;Merge tag 'keys-acl-20190703' of
+ git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs&quot;
+
+...
+
+From 9787aed57dd33ba5c15a713c2c50e78baeb5052d Mon Sep 17 00:00:00 2001
+From: Nathan Chancellor &lt;natechancellor@gmail.com&gt;
+Date: Mon, 1 Jul 2019 11:28:08 -0700
+Subject: coresight: Make the coresight_device_fwnode_match declaration's
+ fwnode parameter const
+
+...
+</code></pre>
+
+<p>This input goes on for about 14 patches.</p>
+
+<p>And the <em>awk</em> program, with some comments to help you understand what is going
+on and also possibly with some issues, is as follows:</p>
+
+<pre><code class="language-awk">BEGIN {
+    total_patches = 0
+    total_proc_patches = 0
+}
+/^From / {
+    # store the second field from input
+    commit_id = $2 
+    total_patches++
+    # get next input, ignoring next patterns
+    next
+}
+/^From: / {
+    # split the whole input using '&lt;' as delimiter
+    nf = split($0, a, &quot;&lt;&quot;)
+    # get everything after 7th char
+    name = substr(a[1], 7)
+    next
+}
+/^Date: / {
+    date_dmy = $3&quot; &quot;$4&quot; &quot;$5
+    next
+}
+/^Subject: / {
+    # you also can recheck for a substring with regex
+    # ignore merges and tagging commits
+    if ($0 ~ &quot;([Rr]evert)?.*\&quot;?[Mm]erge.*&quot;) {
+        next
+    } else if ($0 ~ &quot;Linu[xs] [0-9].[0-9]&quot;) {
+        next 
+    }    
+    subject = substr($0, 10)
+    total_proc_patches++
+    # NR = number of records (inputs)
+    subj_nr = NR
+    next
+}
+{
+    if (NR == subj_nr+1) {
+        if ($0 ~ &quot;^$&quot;) {
+            # awk offers some builtin helper functions
+            r = sprintf(&quot;[%s] %s\n%s\nby %s\n&quot;, date_dmy, commit_id, subject,
+              name)
+        } else if ($0 ~ &quot;^\\s&quot;) {
+            r = sprintf(&quot;[%s] %s\n%s%s\nby %s\n&quot;, date_dmy, commit_id, subject,
+              $0, name)
+        }
+        print r
+    }
+}
+END {
+    print &quot;-----&quot;
+    print &quot;Total patches found:&quot;, total_patches
+    print &quot;Total patches manipulated:&quot;, total_proc_patches
+}
+
+</code></pre>
+
+<p>And the output:</p>
+
+<pre><code class="language-shell">$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5 | awk -f mail.awk
+[1 Jul 2019] 9787aed57dd33ba5c15a713c2c50e78baeb5052d
+coresight: Make the coresight_device_fwnode_match declaration's fwnode parameter const
+by Nathan Chancellor 
+
+[18 Jul 2019] 40ef768ab6eecc1b51461a034274350b31fc29d1
+Remove references to dead website.
+by Dave Jones 
+
+[30 Apr 2019] 618381f09cc15592bf3afe846c6a94e9bfcd9ce4
+hexagon: switch to generic version of pte allocation
+by Mike Rapoport 
+
+[11 Jul 2019] 8cf66504210d308a35cca35fe9c310b1241f9fa7
+iommu/amd: fix a crash in iova_magazine_free_pfns
+by Qian Cai 
+
+[31 Jul 2019] 1b7e816fc80e668f0ccc8542cec20b9259abace1
+mm: slub: Fix slab walking for init_on_free
+by Laura Abbott 
+
+[30 Jul 2019] b36a1552d7319bbfd5cf7f08726c23c5c66d4f73
+Bluetooth: hci_uart: check for missing tty operations
+by Vladis Dronov 
+
+[5 Aug 2019] bfd77145f35c3deafe57e9eb67fff4ccffdaef6e
+Makefile: Convert -Wimplicit-fallthrough=3 to just -Wimplicit-fallthrough for clang
+by Joe Perches 
+
+-----
+Total patches found: 14
+Total patches manipulated: 7
+</code></pre>
+
+<p>As you can see, with a not so complicated <em>awk</em> program I can somewhat easily
+filter the input and generate my desirable output. And because of that, I
+insist, don&rsquo;t hesitate in consider using <em>awk</em> for your daily basis tasks
+around text processing.</p>
+
+<h2 id="final-considerations">Final considerations</h2>
+
+<p>I know there are other text processing tools, for instance, <em>sed</em> or even
+<em>Perl</em>, which has a really powerful text processing engine, even faster than
+<em>awk</em>, but sometimes the task to be performed doesn&rsquo;t require a complete
+language to be used, or even you need to gather an specific column off that
+specific line, why wouldn&rsquo;t I just call <em>awk</em> on its simplest form?</p>
+
+<p>That&rsquo;s where I really like the idea of having more than one way to solve a
+problem, or in this case, have more than a single tool.</p>
+
+<p>Feel free to use whatever you want, but don&rsquo;t hesitate in consider other tools
+you have in hand, tools that are very likely to be available by default in your
+system, like <em>awk</em>.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script async src="//yihui.name/js/center-img.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/perl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/awk.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
+
+  
+  <hr/>
+  <a href="https://github.com/bmeneguele">Github</a> | <a href="https://twitter.com/bmeneguele">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+

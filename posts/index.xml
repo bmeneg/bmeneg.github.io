@@ -6,10 +6,19 @@
     <description>Recent content in Posts on bmeneg&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 19 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>awk - possibly the most underrated Unix tool</title>
+      <link>https://bmeneg.com/posts/awk-tool/</link>
+      <pubDate>Mon, 19 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://bmeneg.com/posts/awk-tool/</guid>
+      <description>Yes, that&amp;rsquo;s right&amp;hellip; the title for this post might be one of the biggest truths we see nowadays about a tool in Unix space. Although the name doesn&amp;rsquo;t mean anything special that describes the tool - it stands for the surname of its creators: Alfred Aho, Peter J. Weinberger e Brian Kernighan, and guess what, at Bell Labs - it really shines and helps in a niche that many of us work everyday: text processing.</description>
+    </item>
     
     <item>
       <title>Network stack - Part 2: Transport layer</title>
