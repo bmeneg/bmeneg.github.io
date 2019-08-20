@@ -4,6 +4,7 @@ title = "bmeneg's blog"
 theme = "xmin"
 disqusShortname = "bmeneguele"
 footnotereturnlinkcontents = "↩"
+googleAnalytics = "UA-76416508-1"
 
 [params]
 description = "A website built through Hugo and blogdown."
