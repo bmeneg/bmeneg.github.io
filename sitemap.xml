@@ -1,16 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>https://bmeneg.com/</loc>
-    <lastmod>2019-08-19T00:00:00+00:00</lastmod>
+    <lastmod>2020-05-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://bmeneg.com/posts/kernel-debugging-qemu/</loc>
+    <lastmod>2020-05-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://bmeneg.com/posts/</loc>
-    <lastmod>2019-08-19T00:00:00+00:00</lastmod>
-    <priority>0</priority>
+    <lastmod>2020-05-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -45,12 +49,10 @@
   
   <url>
     <loc>https://bmeneg.com/categories/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://bmeneg.com/tags/</loc>
-    <priority>0</priority>
   </url>
   
 </urlset>
