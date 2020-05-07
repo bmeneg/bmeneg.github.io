@@ -11,7 +11,7 @@ description = "A website built through Hugo and blogdown."
 footer = "[Github](https://github.com/bmeneguele) | [Twitter](https://twitter.com/bmeneguele)"
 
 [permalinks]
-post = "/post/:slug"
+posts = "/post/:slug"
 
 [[menu.main]]
 name = "Home"
