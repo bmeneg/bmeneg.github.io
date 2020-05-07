@@ -1,6 +1,6 @@
 [submodule "public"]
 	path = public
-	url = https://github.com/bmeneguele/bmeneguele.github.io
+	url = git@github.com:bmeneguele/bmeneguele.github.io.git
 	branch = master
 [submodule "themes/xmin"]
 	path = themes/xmin
