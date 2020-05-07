@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kernel Debugging with QEMU | bmeneg&#39;s blog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/index.xml">RSS</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Kernel Debugging with QEMU</span></h1>
+<h2 class="author">Bruno Meneguele</h2>
+<h2 class="date">2020/05/06</h2>
+</div>
+
+<main>
+
+
+<h2 id="intro">Intro</h2>
+
+<p>Ok, this is a real quick overview on my kernel development environment setup,
+that some has asked about. To be honest, I&rsquo;m not sure how helpful it can be to
+every single people working on each part of the kernel, but for sure it&rsquo;ll
+help to speed things up a lot for those starting on kernel space or actually
+working over some core subsystem that doesn&rsquo;t really require a specific
+hardware to test that.</p>
+
+<p>If you search around the web you&rsquo;re going to found plenty of materials about
+this very same subject, and to be honest, I&rsquo;ve based great part of my setup on
+lots of them. At the same time, it&rsquo;s important to open a note here: that&rsquo;s not
+the only option to actually develop and debug your kernel, it really depends
+on your own requirements, if you don&rsquo;t need a rootfs to be in place, so you&rsquo;re
+fine following the steps I&rsquo;m going to present, on the other hand you can try
+something more sophisticated like
+<a href="https://git.kernel.org/pub/scm/utils/kernel/virtme/virtme.git">virtme</a>, which
+I don&rsquo;t have much experience, but seems pretty helpful as well.</p>
+
+<h2 id="my-environment">My environment</h2>
+
+<p>Nowadays I&rsquo;ve been using Fedora as my Linux distribution for daily work and,
+consequently, one of the tools I&rsquo;m going to pinpoint here are specific to
+Fedora-like distros, like CentOS and RHEL - although I&rsquo;ve seen OpenSuSE and
+Gentoo people commenting on them, so perhaps it&rsquo;s getting attention?</p>
+
+<p>The core utilities are <em>QEMU</em> for virtualization and <em>dracut</em> for creating the
+ramdisk we&rsquo;re going to use as filesystem. Other than that, there are some
+kernel CONFIG options and arguments I really recommend you enable to get
+better debugging information embedded with the kernel image, avoiding too many
+information being removed during debugging session due to compilation
+optimizations.</p>
+
+<h2 id="installation-step">Installation step</h2>
+
+<p>First of all, I&rsquo;m going to assume you&rsquo;re building a kernel module in-tree, so
+the commands being used doesn&rsquo;t really help for getting your out-of-tree
+modules built properly, make sure to check how to build out-of-tree modules
+before getting here.</p>
+
+<p><em>dracut</em> probably is going to be already installed in your system, so you can
+skip that from <em>dnf</em> call, otherwise:</p>
+
+<pre><code class="language-bash">$ sudo dnf install qemu-system-x86 elfutils-libelf-devel dracut
+</code></pre>
+
+<p>It&rsquo;s also worth checking if you system has any virtualization technology
+enabled, it&rsquo;ll improve your experience by a great amount:</p>
+
+<pre><code class="language-bash">$ lscpu | grep Virt
+Virtualization:                  AMD-V
+... or ...
+Virtualization:                  VT-x
+</code></pre>
+
+<p>If so, make sure you have <strong>kvm</strong> module enabled in your system and also to
+install <strong>qemu-kvm</strong> package:</p>
+
+<pre><code class="language-bash">$ lsmod | grep kvm
+kvm_amd               114688  0
+kvm                   802816  1 kvm_amd
+... or ...
+kvm_intel             114688  0
+kvm                   802816  1 kvm_intel
+
+$ sudo dnf install qemu-kvm
+</code></pre>
+
+<h2 id="compilation-step">Compilation step</h2>
+
+<p>Compiling the kernel can be somewhat tricky to get it right the first time.
+You can use a brand new configuration file or the exact same one your local
+installation is running.</p>
+
+<p>If you wish to run the exact same kernel configuration you have running:</p>
+
+<pre><code class="language-bash">$ cp /boot/config-$(uname -r) &lt;kernel-src&gt;/.config
+$ make olddefconfig
+$ make -j$(nproc)
+$ make -j$(nproc) modules_install
+</code></pre>
+
+<p>On the other hand, you can try something completely new:</p>
+
+<pre><code class="language-bash">$ make x86_64_defconfig
+$ make kvmconfig
+$ make -j$(nproc)
+$ make -j$(nproc) modules_install
+</code></pre>
+
+<p>But in both cases something I recommend you to try is to enable the debugging
+options you have at disposal (they are many!), which I&rsquo;m going to present some
+of them I suggest:</p>
+
+<pre><code class="language-bash">$ ./scripts/config -e DEBUG_INFO -e DEBUG_KERNEL -e DEBUG_INFO_DWARF4
+$ ./scripts/config -e DEBUG_SECTION_MISMATCH -e DEBUG_OBJECTS -e DEBUG_OBJECTS_WORK -e DEBUG_VM
+$ ./scripts/config -e GDB_SCRIPTS -e HEADERS_INSTALL
+</code></pre>
+
+<p>The first line of <strong>DEBUG_</strong> options are the standard ones I suggest you have
+enabled regardless the portion of the kernel you&rsquo;re touching at. The second
+line is basically things useful for me, that makes sense for the type of
+feature I&rsquo;m currently working on, which may significantly change to your case.
+And the third one is also for everyone, both options will provide you more
+in-depth information during gdb debugging session.</p>
+
+<p>Something good to remember is the way <strong>make</strong> works with relation to its
+incremental build process: if you don&rsquo;t call something cleaning option of
+<strong>make</strong>, like <em>distclean</em>, anytime you re-execute <strong>make</strong> it&rsquo;ll check what
+actually have changed since the last time you ran that and only recompile the
+source codes that got updated. In this way the amount of time you spend
+recompiling code is decreased by some orders of magnitude, at least.</p>
+
+<h2 id="getting-ram-disk-ready">Getting RAM disk ready</h2>
+
+<p>In short, a RAM disk is a filesystem dynamically placed in you RAM memory in
+boot time that contains the basic stuff needed to get your real filesystem
+running with the first processes needed to get your whole system running as
+expected, like the <em>init</em> process.</p>
+
+<p><em>dracut</em> is the tool used by Fedora, and its relatives, to create the RAM disk
+known as <em>initramfs</em>. Whenever this ram disk gets executed to and doesn&rsquo;t find
+the real rootfs to continue the boot process, or if it finds an issue during
+it&rsquo;s own code path, it&rsquo;ll hand off to the user a terminal where some basic
+tools are available, allowing basic, but useful, recovering and or
+modifications to the system in the hope the user can get the system running
+manually or at least gather the information he needs to seek some help.</p>
+
+<p>That&rsquo;s the goal of our mechanism here, not to but completely until we reach
+the real rootfs image, but to the <em>maintenance terminal</em> we have at disposal
+after <em>initramfs</em> is fully booted.</p>
+
+<p>To create this ramdisk you first need to have in mind the way your modules was
+built: was it set as a built-in module or as a loadable module? If it&rsquo;s an
+out-of-tree module so you know the it&rsquo;s a loadable module, while if it&rsquo;s an
+in-tree module you had to choose between &ldquo;=y&rdquo; or &ldquo;=m&rdquo; in the configuration
+file. This information is important because you need to decide if you need to
+import or not you module inside the ramdisk. Built-in modules are linked
+directly inside kernel image, known as <em>vmlinux</em>, while loadable modules are
+separate files with <strong>.ko</strong> extensions that must be moved into the ramdisk
+we&rsquo;re going to create before we actually run it.</p>
+
+<p>If you&rsquo;ve built your module as built-in, the only thing you need is to create
+the ramdisk pointing to the kernel image generated by the compilation step of
+the kernel in question:</p>
+
+<pre><code class="language-bash">$ sudo dracut -v -f ramdisk.img &lt;kernel-name&gt;
+</code></pre>
+
+<p>Where the <em>kernel-name</em> is the name of the folder that was created during the
+<code>make modules-install</code> step.</p>
+
+<p>On the other hand, if your module was built as a loadable one, you need to
+import this driver file into ramdisk, it&rsquo;s done by passing folder path where
+the <strong>.ko</strong> is located. For instance, assuming the path is
+<code>/home/myuser/my-great-module/</code></p>
+
+<pre><code class="language-bash">$ sudo dracut -v -f --include &quot;/home/myuser/my-great-module&quot; &quot;/my-module&quot; ramdisk.img &lt;kernel-name&gt;
+</code></pre>
+
+<p>In this way you&rsquo;re going to have your folder module copied into the ramdisk at
+<code>/my-module</code>.</p>
+
+<h2 id="execution-step">Execution step</h2>
+
+<p>Ok, now it&rsquo;s time to get our compiled kernel plus the ramdisk we just created
+and bundle them together to launch the virtualization machinery with that.
+Just to make things clear, lets assume some &ldquo;variables&rdquo;:</p>
+
+<pre><code>kernel_path = /home/myuser/my-kernel/
+ramdisk_path = /home/myuser/my-ramdisk/
+</code></pre>
+
+<p>Now:</p>
+
+<pre><code class="language-bash">$ qemu-system-x86_64 \
+	-kernel $kernel_path/vmlinux \
+	-initrd $ramdisk_path/ramdisk.img \
+	-append &quot;console=ttyS0 nokaslr&quot; \
+	-nographic -enable-kvm -cpu host -m 512
+</code></pre>
+
+<p>The above command will launch <code>qemu-system-x86_64</code> using the our kernel and
+ramdisk plus some additional parameters that you can fine the meaning pretty
+easily checking <code>qemu-system-x86_64</code> manpage. But you don&rsquo;t need to worry
+about these additional parameters for now; their usage there is basically to
+improve the debugging experience and also to allow better performance.</p>
+
+<p>As soon as you hit enter you&rsquo;re going to see that the whole kernel boot starts
+popping up on the console screen, that&rsquo;s your custom kernel and ramdisk
+booting. Whatever changes you&rsquo;ve done to that, is going to be there. Once the
+ramdisk finished its boot you&rsquo;re going to see something like:</p>
+
+<pre><code class="language-bash">Press Enter for maintenance
+(or press Control-D to continue):
+</code></pre>
+
+<p>Hit enter and then load your module (if built as a loadable module):</p>
+
+<pre><code class="language-bash">:/root# insmod my-module/test.ko
+</code></pre>
+
+<h2 id="debugging-step">Debugging step</h2>
+
+<p>Moving forward, the debugging step is somewhat straightforward if you&rsquo;re
+already used to GDB. The only thing that changes is the way you attach the
+running kernel on <code>qemu</code> to the GDB session.</p>
+
+<p>The first thing is to actually add a couple arguments to the <code>qemu</code> call:</p>
+
+<pre><code class="language-bash">$ qemu-system-x86_64 \
+	-kernel $kernel_path/vmlinux \
+	-initrd $ramdisk_path/ramdisk.img \
+	-append &quot;console=ttyS0 nokaslr&quot; \
+	-nographic -enable-kvm -cpu host -m 512 \
+	-s -S
+</code></pre>
+
+<p>Yes, these last two <code>-s -S</code>, which make the execution wait on startup and also
+open a connection port <code>:1234</code>. With that, now we can attach GDB to this
+port and debug our kernel. But, before that lets add a special file that was
+created during kernel compilation, due to the <em>GDB_SCRIPTS</em> option, to our
+<code>~/.gdbinit</code> file:</p>
+
+<pre><code class="language-bash">$ echo &quot;add-auto-load-safe-path $kernel_path/scripts/gdb/vmlinux-gdb.py&quot; &gt;&gt; ~/.gdbinit
+</code></pre>
+
+<p>and finally start the debug:</p>
+
+<pre><code class="language-bash">$ gdb $kernel_path/vmlinux
+...
+(gdb) tagert remote localhost:1234
+Remote debugging using localhost:1234
+0x000000000000fff0 in exception_stacks ()
+(gdb) lx-
+lx-clk-summary        lx-device-list-bus    lx-fdtdump            lx-list-check         lx-symbols            
+lx-cmdline            lx-device-list-class  lx-genpd-summary      lx-lsmod              lx-timerlist          
+lx-configdump         lx-device-list-tree   lx-iomem              lx-mounts             lx-version            
+lx-cpus               lx-dmesg              lx-ioports            lx-ps                 
+(gdb) hbreak kernel_init
+Hardware assisted breakpoint 1 at 0xffffffff81b07d8a: file init/main.c, line 1358.
+(gdb)
+</code></pre>
+
+<p>All these <code>lx-*</code> commands were added by the <code>vmlinux-gdb.py</code> helper created in
+compilation time. And from now on, you can follow the normal GDB commands to
+debug the kernel, side by side with the console running the boot process.</p>
+
+<p>I&rsquo;ve plans to create a post related to the debug process itself, with some
+tips and tricks I&rsquo;ve been learning every single day. The Linux Kernel itself
+has quite some complex constructs and optimizations, sometimes it&rsquo;s really
+hard to follow along, but the best way I&rsquo;ve found to understand it was by
+debugging it.</p>
+
+<p>HTH.
+Many thanks.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script async src="//yihui.name/js/center-img.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/perl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/awk.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-76416508-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+  
+  <hr/>
+  <a href="https://github.com/bmeneguele">Github</a> | <a href="https://twitter.com/bmeneguele">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chroot e QEMU para ARM em x86 (PT-BR only) | bmeneg&#39;s blog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/xcode.min.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/index.xml">RSS</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Chroot e QEMU para ARM em x86 (PT-BR only)</span></h1>
+<h2 class="author">Bruno Meneguele</h2>
+<h2 class="date">2016/04/20</h2>
+</div>
+
+<main>
+
+
+<p>De forma breve tentarei contextualizar a necessidade que tive para chegar a esta
+técnica que irei apresentar, que sem dúvida, quando descobri, fiquei rindo por
+algum tempo sozinho.</p>
+
+<h2 id="a-necessidade">A necessidade</h2>
+
+<p>Como todos vocês devem saber (baste dar uma lida rápida <a href="/sobre">sobre
+mim</a>) trabalho com Linux Embarcado, principalmente sobre
+plataformas ARM, e de tempos em tempos sou responsável por gerar a imagem do
+sistema completo (bootloader + kernel + rootfs + aplicações da solução
+proprietária) de uma forma que facilite no ambiente de produção. Cada um desses
+componentes foram personalisados separadamente para a solução e no final tudo
+que se espera é uma imagem <strong>.img</strong>, <strong>.iso</strong>, qualquer coisa assim.</p>
+
+<p>No momento era necessário aplicar algumas pequenas mudanças nos pacotes do
+sistema (rootfs) da imagem, que influenciariam diretamente o funcionamento das
+aplicações proprietárias. Sendo assim, a forma básica que trabalhávamos era
+colocar esta imagem na plataforma ARM, fazer as mudanças necessárias e
+recompactar o rootfs inteiro a fim de regerar a imagem final. Isto era feito
+pois o Kernel modificado que estava utilizando não estava preparado (versão,
+módulos, entre outras coisas) para rodar sobre uma virtualização com QEMU + KVM,
+por exemplo. Com certeza melhorias poderiam ser feitas para habilitar este
+suporte, mas por uma questão de tempo as coisas não correm sempre como o ideal
+né?</p>
+
+<p>Este processo de gravar a imagem, modificar o que for necessário quanto aos
+pacotes do sistema e compactar o sistema inteiro (fazer um <em>backup</em>) levava um
+bom tempo (considerando as mudanças), ainda mais contando que a plataforma
+utilizada não possuí um grande poder de processamento.</p>
+
+<p>Foi quando fui atrás de achar alguma técnica mais viável que me permitiria
+modificar o sistema por completo mesmo não sendo da mesma arquitetura, algo como
+o <strong>chroot</strong> faz, misturado com o suporte das diferentes arquiteturas do
+<strong>QEMU</strong>.</p>
+
+<h2 id="a-descoberta">A descoberta</h2>
+
+<p>Foi aí que descobri como utilizar exatamente estas duas ferramentas juntas
+através de uma pitadinha de <em>mágica</em> que as entranhas do kernel as vezes nos
+esconde.</p>
+
+<p>Utilizando um módulo do chamado <strong>binfmt_misc</strong> é possível registrar um
+interpretador específico para um determinado tipo de arquitetura quando
+necessário. Em outras palavras, você consegue dizer ao kernel qual executável
+ele deve usar para interpretar outro que foi compilado para uma arquitura
+específica X. Mas vamos com calma.</p>
+
+<p>Para começar, vamos supor que precisamos criar uma imagem de um sistema de arquivos
+ARM para depois poder utilizar na plataforma ARM.</p>
+
+<pre><code class="language-shell">$ dd of=arm-rootfs.img bs=1 seek=4G count=0
+# mkfs.ext4 -F arm-rootfs.img
+</code></pre>
+
+<p>Após isso apenas monte esta imagem em qualquer local.</p>
+
+<pre><code class="language-shell">$ mkdir arm-chroot
+# mount -o loop arm-rootfs arm-chroot/
+</code></pre>
+
+<p>Com um RootFS de alguma distribuição ARM em mãos (por exemplo este do <a href="br2.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz">ArchLinux
+ARM</a>),
+descompacte dentro da pasta que foi criada e que será onde acessaremos como
+chroot.</p>
+
+<pre><code class="language-shell"># tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot
+</code></pre>
+
+<p>Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactação
+paralela, porém é necessário possuir alguma aplicação com tal suporte instalado,
+como o <strong>pigz</strong>.</p>
+
+<pre><code class="language-shell"># tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot
+</code></pre>
+
+<p>A partir de agora é onde a <em>mágica</em> acontece: baixe a versão estática do binário
+do qemu-user <a href="https://packages.debian.org/sid/qemu-user-static">aqui</a> e, caso
+você não utilizar a distribuição Debian ou alguma outra derivada deste, será
+necessário converter o pacote. Para isso pode ser utilizado a aplicação &ldquo;alien&rdquo;,
+a qual provavelmente deve existir no repositório da sua distribuição.</p>
+
+<p>Uma vez instalado no sistema o <strong>qemu-arm-static</strong>, faça uma cópia do mesmo para
+o sistema ARM:</p>
+
+<pre><code class="language-shell"># cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static
+</code></pre>
+
+<p>Feito isso, está na hora de definir este como interpretador de executáveis que
+foram compilados para ARM e que estão presentes sobre o seu Linux Kernel para
+x86. Para fazer isso é necessário você possuir o módulo <strong>binfmt_misc</strong>
+devidamente habilitado em seu kernel.</p>
+
+<pre><code class="language-shell"># zcat /proc/config.gz | grep -i binfmt_misc
+CONFIG_BINFMT_MISC=y
+</code></pre>
+
+<p>Certifíque-se que o mesmo foi montado.</p>
+
+<pre><code class="language-shell"># ls /proc/sys/fs/binfmt_misc/
+</code></pre>
+
+<p>Caso não, monte-o com:</p>
+
+<pre><code class="language-shell"># mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc 
+</code></pre>
+
+<p>Como já dito anteriormente, com este suporte é possível registrar um
+interpretador específico para executar/interpretar os binários de outras
+plataformas, como ARMv7. O comando para registrar é um tanto diferente:</p>
+
+<pre><code class="language-shell"># echo ':arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:' &gt; /proc/sys/fs/binfmt_misc/register
+</code></pre>
+
+<p>Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do
+módulo <a href="https://www.kernel.org/doc/Documentation/binfmt_misc.txt">binfmt_misc</a>
+temos a seguinte informação:</p>
+
+<blockquote>
+<p>Binfmt_misc recognises the binary-type by matching some bytes at the beginning
+  of the file with a magic byte sequence (masking out specified bits) you have
+  supplied.</p>
+</blockquote>
+
+<p>e também:</p>
+
+<blockquote>
+<p>To actually register a new binary type, you have to set up a string looking
+  like :name:type:offset:magic:mask:interpreter:flags (where you can choose the
+  &lsquo;:&rsquo; upon your needs) and echo it to /proc/sys/fs/binfmt_misc/register.</p>
+</blockquote>
+
+<p>Ou seja, cada campo separado por &lsquo;:&rsquo; possui um significado próprio, sendo estes:</p>
+
+<pre><code>- name: nome que será dado ao registro no kernel, para nós, 'arm';
+- type: o tipo de dados que será usado para identificar o executável, para nós, 
+  'M' de 'magic';
+- offset: distância em bytes que o valor mágico estará do início do cabeçalho do 
+  executável, para nós foi omitido que significa um offset de 0;
+- magic: são os valores exatos que devem existir nos cabeçalhos dos executáveis 
+  a serem interpretados, no nosso caso os executáveis devem ser no formato ELF
+  para plataforma ARM de 32 bits. A definição desta restrição está neste 18 
+  bytes apresentados;
+- mask: define os bytes que devem ser considerados (0xFF) ou ignorados (0x00) 
+  na hora de ler o cabeçalho do executável;
+- interpreter: caminho absoluto para o interpretador;
+- flags: informações específicas que podem ser passadas para o interpretador na
+  hora da execução.
+</code></pre>
+
+<p>Para maiores detalhes sobre o valor mágico passado visite este
+<a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">link</a>. Apenas para
+facilitar, os primeiros bytes <strong>\x7fELF\x01</strong> indicam ser um arquivo com formato
+ELF de 32 bits, já em <strong>\x02\x00\x28\x00</strong> quer dizer que é um executável para
+plataforma ARM, ou seja, todos arquivos <em>executáveis, com formato ELF de 32
+bits e compilados para ARM</em> devem ser executados pelo <strong>interpreter</strong>.</p>
+
+<p>Sendo assim, o sistema ARM em arm-chroot/ já está pronto para ser utilizado,
+agora basta fazer o processo comum do chroot.</p>
+
+<pre><code class="language-shell"># mount -t proc /proc arm-chroot/proc
+# mount -o bind /dev arm-chroot/dev
+# mount -o bind /dev/pts arm-chroot/dev/pts
+# mount -o bind /sys arm-chroot/sys
+# mount -o bind /run arm-chroot/run
+# chroot arm-chroot/ /bin/bash
+</code></pre>
+
+<p>Uma vez dentro, você pode executar os comandos normais da distribuição referente
+ao rootfs utilizado. No meu caso, utilizando o rootfs do ArchLinux ARM, posso
+executar o <strong>pacman -S</strong> para realizar instalações de pacotes do sistema, que
+irão afetar apenas os arquivos do sistema dentro de arm-chroot/.</p>
+
+<p>Quando finalizado, você pode recompactar o rootfs em um .tar.gz ou então apenas
+desmontar a imagem .img (e os binds feitos) e utilizá-la em uma plataforma ARM
+real.</p>
+
+<p>Assim é como efetuo alterações e testes de forma simples e rápida em minhas
+tarefas do dia a dia.</p>
+
+<p>Qualquer dúvida ou crítica, mandem um comentário!<br />
+Valew a todos e até o próximo post! \o.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script async src="//yihui.name/js/center-img.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/perl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/awk.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-76416508-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+  
+  <hr/>
+  <a href="https://github.com/bmeneguele">Github</a> | <a href="https://twitter.com/bmeneguele">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+

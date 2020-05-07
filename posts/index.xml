@@ -13,57 +13,57 @@
     
     <item>
       <title>Kernel Debugging with QEMU</title>
-      <link>https://bmeneg.com/posts/kernel-debugging-qemu/</link>
+      <link>https://bmeneg.com/post/kernel-debugging-with-qemu/</link>
       <pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/kernel-debugging-qemu/</guid>
+      <guid>https://bmeneg.com/post/kernel-debugging-with-qemu/</guid>
       <description>Intro Ok, this is a real quick overview on my kernel development environment setup, that some has asked about. To be honest, I&amp;rsquo;m not sure how helpful it can be to every single people working on each part of the kernel, but for sure it&amp;rsquo;ll help to speed things up a lot for those starting on kernel space or actually working over some core subsystem that doesn&amp;rsquo;t really require a specific hardware to test that.</description>
     </item>
     
     <item>
       <title>awk - possibly the most underrated Unix tool</title>
-      <link>https://bmeneg.com/posts/awk-tool/</link>
+      <link>https://bmeneg.com/post/awk-possibly-the-most-underrated-unix-tool/</link>
       <pubDate>Mon, 19 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/awk-tool/</guid>
+      <guid>https://bmeneg.com/post/awk-possibly-the-most-underrated-unix-tool/</guid>
       <description>Yes, that&amp;rsquo;s right&amp;hellip; the title for this post might be one of the biggest truths we see nowadays about a tool in Unix space. Although the name doesn&amp;rsquo;t mean anything special that describes the tool - it stands for the surname of its creators: Alfred Aho, Peter J. Weinberger e Brian Kernighan, and guess what, at Bell Labs - it really shines and helps in a niche that many of us work everyday: text processing.</description>
     </item>
     
     <item>
       <title>Network stack - Part 2: Transport layer</title>
-      <link>https://bmeneg.com/posts/net-stack-transport/</link>
+      <link>https://bmeneg.com/post/network-stack-part-2-transport-layer/</link>
       <pubDate>Sun, 18 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/net-stack-transport/</guid>
+      <guid>https://bmeneg.com/post/network-stack-part-2-transport-layer/</guid>
       <description>Ok, continuing our journey through the network stack downwards we just reached the transport layer, where some of the magics behind the scenes happen. This layer is where two of the most well known protocols are, being them TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).
 These two protocols are used to the same purpose: provide a way to two different applications (i.e. a HTTP client and a server) to communicate between them accross the whole internet (or even in the same [local] system).</description>
     </item>
     
     <item>
       <title>Network stack - Part 1: Application layer</title>
-      <link>https://bmeneg.com/posts/net-stack-app/</link>
+      <link>https://bmeneg.com/post/network-stack-part-1-application-layer/</link>
       <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/net-stack-app/</guid>
+      <guid>https://bmeneg.com/post/network-stack-part-1-application-layer/</guid>
       <description>One of the things I have been studying in the past few days is how the networking stack works in our lives nowadays:
  What are the standard protocols? How these protocols work? How everything are integrated?  These questions guided me towards a &amp;ldquo;playing around&amp;rdquo; exercise: build a simple HTTP server and follow all the steps that a simple data packet goes throughout the networking stack (top-down approach).</description>
     </item>
     
     <item>
       <title>Limitações e pitfalls de memórias NAND (PT-BR only)</title>
-      <link>https://bmeneg.com/posts/limitacoes-pitfalls-memoria-nand/</link>
+      <link>https://bmeneg.com/post/limita%C3%A7%C3%B5es-e-pitfalls-de-mem%C3%B3rias-nand-pt-br-only/</link>
       <pubDate>Wed, 11 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/limitacoes-pitfalls-memoria-nand/</guid>
+      <guid>https://bmeneg.com/post/limita%C3%A7%C3%B5es-e-pitfalls-de-mem%C3%B3rias-nand-pt-br-only/</guid>
       <description>O suporte às memórias NAND na árvore principal do Kernel do Linux se mostram bastante maduras para o uso do total potencial destas memórias, porém, mesmo o suporte sendo bastante robusto e completo alguns problemas relacionados ao chip/arquitetura das memórias tem trazido vários problemas às aplicações, principalmente àquelas que rodam sobre Single Board Computers, como Cubieboard/truck ou qualquer outra que possuí memória não volátil deste tipo, e que geralmente não estão alinhadas diretamente à linha principal do Kernel possuindo uma versão mais antigas com adaptações (patches) específicas para aquela SBC.</description>
     </item>
     
     <item>
       <title>Chroot e QEMU para ARM em x86 (PT-BR only)</title>
-      <link>https://bmeneg.com/posts/chroot-qemu-arm/</link>
+      <link>https://bmeneg.com/post/chroot-e-qemu-para-arm-em-x86-pt-br-only/</link>
       <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://bmeneg.com/posts/chroot-qemu-arm/</guid>
+      <guid>https://bmeneg.com/post/chroot-e-qemu-para-arm-em-x86-pt-br-only/</guid>
       <description>De forma breve tentarei contextualizar a necessidade que tive para chegar a esta técnica que irei apresentar, que sem dúvida, quando descobri, fiquei rindo por algum tempo sozinho.
 A necessidade Como todos vocês devem saber (baste dar uma lida rápida sobre mim) trabalho com Linux Embarcado, principalmente sobre plataformas ARM, e de tempos em tempos sou responsável por gerar a imagem do sistema completo (bootloader + kernel + rootfs + aplicações da solução proprietária) de uma forma que facilite no ambiente de produção.</description>
     </item>
