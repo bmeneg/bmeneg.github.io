@@ -1,5 +1,5 @@
 ---
-title: "Kernel Debugging with QEMU"
+title: "Kernel debugging with QEMU"
 author: "Bruno Meneguele"
 date: 2020-05-06
 ---
