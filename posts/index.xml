@@ -6,7 +6,7 @@
     <description>Recent content in Posts on bmeneg&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,10 +14,10 @@
     <item>
       <title>Kernel debugging - memory case</title>
       <link>https://bmeneg.com/post/kernel-debugging-memory-case/</link>
-      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
       
       <guid>https://bmeneg.com/post/kernel-debugging-memory-case/</guid>
-      <description>The last post I did showed the firsts step to setup a development/debugging environment for working with Linux Kernel, which has been the perfect setup so far to me. But something was lacking at the end of the post&amp;hellip; a bit of the real taste of that. Because of that, in this post I&amp;rsquo;m going to show you a quick walkthrough using one of my recent projects into kernel.</description>
+      <description>In the last post I showed the firsts step to setup a development/debugging environment for working with Linux Kernel, which has been the perfect setup so far to me. But something was lacking at the end of the post&amp;hellip; a bit of the real taste of that. Because of that, in this post I&amp;rsquo;m going to show you a quick walkthrough using one of my recent projects into kernel.</description>
     </item>
     
     <item>
