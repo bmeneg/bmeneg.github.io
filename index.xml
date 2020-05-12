@@ -17,7 +17,7 @@
       <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
       
       <guid>https://bmeneg.com/post/kernel-debugging-memory-case/</guid>
-      <description>In the last post I showed the firsts step to setup a development/debugging environment for working with Linux Kernel, which has been the perfect setup so far to me. But something was lacking at the end of the post&amp;hellip; a bit of the real taste of that. Because of that, in this post I&amp;rsquo;m going to show you a quick walkthrough using one of my recent projects into kernel.</description>
+      <description>In the last post I showed the first steps to setup a development/debugging environment for working with Linux Kernel, which has been the &amp;ldquo;perfect&amp;rdquo; (read it as: the one that have worked) setup so far to me. But something was lacking at the end of the post&amp;hellip; a bit of the real taste of that. Because of that, in this post I&amp;rsquo;m going to show you a quick walkthrough using one of my recent projects into kernel.</description>
     </item>
     
     <item>
