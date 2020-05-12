@@ -1,15 +1,15 @@
 ---
 title: "Kernel debugging - memory case"
 author: "Bruno Meneguele"
-date: 2020-05-10
+date: 2020-05-11
 ---
 
-The last [post](/post/kernel-debugging-with-qemu) I did showed the firsts step to
-setup a development/debugging environment for working with Linux Kernel, which
-has been the perfect setup so far to me. But something was lacking at the end
-of the post... a bit of the real taste of that. Because of that, in this post
-I'm going to show you a quick walkthrough using one of my recent projects into
-kernel.
+In the [last post](/post/kernel-debugging-with-qemu) I showed the firsts step
+to setup a development/debugging environment for working with Linux Kernel,
+which has been the perfect setup so far to me. But something was lacking at
+the end of the post... a bit of the real taste of that. Because of that, in
+this post I'm going to show you a quick walkthrough using one of my recent
+projects into kernel.
 
 The project itself doesn't really matter, one day I'm going to share it with
 you guys, but today the context is somewhat pretty simple: I have a userspace
