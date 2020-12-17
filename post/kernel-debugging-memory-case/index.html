@@ -31,82 +31,71 @@
 </div>
 
 <main>
-
-
 <p>In the <a href="/post/kernel-debugging-with-qemu">last post</a> I showed the first steps
 to setup a development/debugging environment for working with Linux Kernel,
 which has been the &ldquo;perfect&rdquo; (read it as: the one that have worked) setup so
 far to me. But something was lacking at the end of the post&hellip; a bit of the
 real taste of that. Because of that, in this post I&rsquo;m going to show you a
 quick walkthrough using one of my recent projects into kernel.</p>
-
 <p>The project itself doesn&rsquo;t really matter, one day I&rsquo;m going to share it with
 you guys, but today the context is somewhat pretty simple: I have a userspace
 application, that got launched by a mechanism called <em>User Mode Helper</em> (UMH)
 from within the kernel, which shares memory with the kernel directly; in other
 words, I have a shared memory region that is shared between the kernel and a
 user program running independently.</p>
-
 <p>This region is first requested by the user program by opening and mmap&rsquo;ing a
 character device file that I called <code>/dev/umg_shm</code>, then the kernel allocates
 a reserved region (that doesn&rsquo;t get swapped) within its own virtual memory
 space and gives read and write access to whomever requested that. Albeit the
 region is fully shared (read and write access) for both sides, a
 synchronization protocol must be applied to avoid any data race among them.</p>
-
 <p>To start with, we need to make sure both kernel and user processes are indeed
 writing to the very same region and perform a quick &ldquo;healthy check&rdquo; to make
 sure both can read and write data to the region without any surprises.</p>
-
 <blockquote>
 <p>NOTE: we are not too concerned about security issues right now, that&rsquo;s
 for another discussion.</p>
-
+</blockquote>
+<blockquote>
 <p>NOTE²: the code here being presented aren&rsquo;t fully implemented and you
 won&rsquo;t find some parts of it in upstream kernel, since it&rsquo;s part of a
 personal project. Whenever some specific information can&rsquo;t be find in
 upstream I&rsquo;m going to give you guys the context around that.</p>
 </blockquote>
-
 <p>Lets start using the GDB session we created in the <a href="/post/kernel-debugging-with-qemu/">previous
 post</a>:</p>
-
-<pre><code class="language-shell">$ gdb vmlinux
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ gdb vmlinux
 ...
-(gdb) target remote localhost:1234
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> target remote localhost:1234
 Remote debugging using localhost:1234
-0x000000000000fff0 in exception_stacks ()
-(gdb) hbreak drivers/char/umh_shmem.c:51
-Hardware assisted breakpoint 1 at 0xffffffff814d01b0: file drivers/char/umh_shmem.c, line 52.
-(gdb) continue
+0x000000000000fff0 in exception_stacks <span style="color:#f92672">()</span>
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> hbreak drivers/char/umh_shmem.c:51
+Hardware assisted breakpoint <span style="color:#ae81ff">1</span> at 0xffffffff814d01b0: file drivers/char/umh_shmem.c, line 52.
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> <span style="color:#66d9ef">continue</span>
 Continuing.
 
-Breakpoint 1, shmem_mmap (file=0xffff88801d7f8b00, vma=0xffff88801f98f540) at drivers/char/umh_shmem.c:52
+Breakpoint 1, shmem_mmap <span style="color:#f92672">(</span>file<span style="color:#f92672">=</span>0xffff88801d7f8b00, vma<span style="color:#f92672">=</span>0xffff88801f98f540<span style="color:#f92672">)</span> at drivers/char/umh_shmem.c:52
 warning: Source file is more recent than executable.
-52      {
-(gdb) l
-47              .close = vma_remap_close,
-48              .fault = vma_remap_fault,
-49      };
-50
-51      static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
-52      {
-53              int err;
-54              struct umh_shmem *shm_info = &amp;(current-&gt;umh_info-&gt;ipc.shm_info);
-55              char *mem = (char *)kzalloc(UMH_SHM_LEN, GFP_KERNEL);
-56              phys_addr_t data;
-(gdb)
-</code></pre>
-
-<p>As I said before, the shared memory is being exposed via a char device in
+<span style="color:#ae81ff">52</span>      <span style="color:#f92672">{</span>
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> l
+<span style="color:#ae81ff">47</span>              .close <span style="color:#f92672">=</span> vma_remap_close,
+<span style="color:#ae81ff">48</span>              .fault <span style="color:#f92672">=</span> vma_remap_fault,
+<span style="color:#ae81ff">49</span>      <span style="color:#f92672">}</span>;
+<span style="color:#ae81ff">50</span>
+<span style="color:#ae81ff">51</span>      static int shmem_mmap<span style="color:#f92672">(</span>struct file *file, struct vm_area_struct *vma<span style="color:#f92672">)</span>
+<span style="color:#ae81ff">52</span>      <span style="color:#f92672">{</span>
+<span style="color:#ae81ff">53</span>              int err;
+<span style="color:#ae81ff">54</span>              struct umh_shmem *shm_info <span style="color:#f92672">=</span> &amp;<span style="color:#f92672">(</span>current-&gt;umh_info-&gt;ipc.shm_info<span style="color:#f92672">)</span>;
+<span style="color:#ae81ff">55</span>              char *mem <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>char *<span style="color:#f92672">)</span>kzalloc<span style="color:#f92672">(</span>UMH_SHM_LEN, GFP_KERNEL<span style="color:#f92672">)</span>;
+<span style="color:#ae81ff">56</span>              phys_addr_t data;
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>As I said before, the shared memory is being exposed via a char device in
 <code>/dev/umh_shm</code>, which is created in the <code>_init</code> function on
 <code>drivers/char/umh_shmem.c</code>. Besides that, this file also holds all file
 operations available for the char dev, including the <code>open()</code> and <code>mmap()</code> and
 others. A way to check the memory being actually returned by the mmap() call
 is by setting a breakpoint in there.</p>
-
 <h2 id="side-note-about-umh">Side note about UMH</h2>
-
 <p>You might be wondering the reason for setting a breakpoint at kernel side
 instead of user program, I mean, why would I debug kernel image rather than
 user program? The reason for that is related to how UMH works, which deserves
@@ -118,100 +107,81 @@ UMH and passes the start and end addresses, where this executable is placed
 within kernel image, and the length of this object. Thus UMH creates a user
 space thread, via a call to <code>kernel_thread()</code> and <code>do_execve()</code> directly to
 it.</p>
-
 <p>Of course, there are other action in-between my module call to UMH and the
 actual <code>execve()</code> into my userspace program&rsquo;s <code>main()</code> function, a whole
 environment setup is required, but the program is then launched as a child of
 the kernel&rsquo;s <em>init</em> process.</p>
-
 <p>Could I pass to GDB the exact place within kernel image to start the debug
 process? Yes, probably, but considering the workflow is really tied to the
 kernel internal behavior I think it&rsquo;s easier to understand and solve issues
 looking from lower layers perspective.</p>
-
 <h2 id="getting-back-to-the-debugging-session">Getting back to the debugging session</h2>
-
 <p>First of all, we can see that both arguments of the function <code>shmem_mmap</code> are:</p>
-
-<pre><code class="language-shell">file=0xffff88801d7f8b00
-vma=0xffff88801f98f540
-</code></pre>
-
-<p>If you know the code, or you&rsquo;re following it, you know that any <code>mmap()</code> call
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">file<span style="color:#f92672">=</span>0xffff88801d7f8b00
+vma<span style="color:#f92672">=</span>0xffff88801f98f540
+</code></pre></div><p>If you know the code, or you&rsquo;re following it, you know that any <code>mmap()</code> call
 has the arguments of type <code>struct file *</code> and <code>struct vm_area_struct *</code>
 respectively. With that and, possibly, with a small step further we can
 retrieve some interesting information. For instance:</p>
-
-<pre><code class="language-shell">(gdb) p *(struct dentry *)file.f_path.dentry
-$7 = {d_flags = 5242888, d_seq = {sequence = 2}, d_hash = {next =
-0xffff88801d132a88, pprev = 0xffff88801ddd4ad0}, d_parent = 0xffff88801d004300,
-d_name = {{{hash = 2927770382, len = 7}, hash_len = 32992541454}, 
-name = 0xffff88801cec8578 &quot;umh_shm&quot;}, d_inode = 0xffff88801cb4b630, d_iname = &quot;umh_shm&quot;, 
-'\000' &lt;repeats 24 times&gt;, d_lockref = {{lock_count = 8589934592, {lock =
-{{rlock = {raw_lock = {{val = {counter = 0}, { ...
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> p *<span style="color:#f92672">(</span>struct dentry *<span style="color:#f92672">)</span>file.f_path.dentry
+$7 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>d_flags <span style="color:#f92672">=</span> 5242888, d_seq <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>sequence <span style="color:#f92672">=</span> 2<span style="color:#f92672">}</span>, d_hash <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>next <span style="color:#f92672">=</span>
+0xffff88801d132a88, pprev <span style="color:#f92672">=</span> 0xffff88801ddd4ad0<span style="color:#f92672">}</span>, d_parent <span style="color:#f92672">=</span> 0xffff88801d004300,
+d_name <span style="color:#f92672">=</span> <span style="color:#f92672">{{{</span>hash <span style="color:#f92672">=</span> 2927770382, len <span style="color:#f92672">=</span> 7<span style="color:#f92672">}</span>, hash_len <span style="color:#f92672">=</span> 32992541454<span style="color:#f92672">}</span>, 
+name <span style="color:#f92672">=</span> 0xffff88801cec8578 <span style="color:#e6db74">&#34;umh_shm&#34;</span><span style="color:#f92672">}</span>, d_inode <span style="color:#f92672">=</span> 0xffff88801cb4b630, d_iname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;umh_shm&#34;</span>, 
+<span style="color:#e6db74">&#39;\000&#39;</span> &lt;repeats <span style="color:#ae81ff">24</span> times&gt;, d_lockref <span style="color:#f92672">=</span> <span style="color:#f92672">{{</span>lock_count <span style="color:#f92672">=</span> 8589934592, <span style="color:#f92672">{</span>lock <span style="color:#f92672">=</span>
+<span style="color:#f92672">{{</span>rlock <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>raw_lock <span style="color:#f92672">=</span> <span style="color:#f92672">{{</span>val <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>counter <span style="color:#f92672">=</span> 0<span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> ...
 ...
-(gdb) p $7.d_name.name
-$8 = (const unsigned char *) 0xffff88801cec8578 &quot;umh_shm&quot;
-(gdb)
-</code></pre>
-
-<p>For each object feedback GDB gives it generates a variable to which you can
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> p $7.d_name.name
+$8 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>const unsigned char *<span style="color:#f92672">)</span> 0xffff88801cec8578 <span style="color:#e6db74">&#34;umh_shm&#34;</span>
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>For each object feedback GDB gives it generates a variable to which you can
 refer later, like the <code>$7</code> there. And with output <code>$8</code> we know the file being
 passed as the argument of <code>mmap()</code> is indeed the one we were expecting
 <code>umh_shm</code>. If you&rsquo;re still not sure about that, you can dig even further to
 check if the file is indeed referring to a char device:</p>
-
-<pre><code class="language-shell">(gdb) p /x *(struct inode *)file.f_inode
-$9 = {i_mode = 0x2180, i_opflags = 0xd, i_uid = {val = 0x0}, i_gid = {val = 0x0},
-i_flags = 0x0, i_acl = 0x0, i_default_acl = 0x0, i_op = 0xffffffff82015f80,
-i_sb = 0xffff88801d4c9000, i_mapping = 0xffff88801cb4b798, i_security = 0xffff88801f8ccd20,
-i_ino = 0x275f, { ...
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> p /x *<span style="color:#f92672">(</span>struct inode *<span style="color:#f92672">)</span>file.f_inode
+$9 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>i_mode <span style="color:#f92672">=</span> 0x2180, i_opflags <span style="color:#f92672">=</span> 0xd, i_uid <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>val <span style="color:#f92672">=</span> 0x0<span style="color:#f92672">}</span>, i_gid <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>val <span style="color:#f92672">=</span> 0x0<span style="color:#f92672">}</span>,
+i_flags <span style="color:#f92672">=</span> 0x0, i_acl <span style="color:#f92672">=</span> 0x0, i_default_acl <span style="color:#f92672">=</span> 0x0, i_op <span style="color:#f92672">=</span> 0xffffffff82015f80,
+i_sb <span style="color:#f92672">=</span> 0xffff88801d4c9000, i_mapping <span style="color:#f92672">=</span> 0xffff88801cb4b798, i_security <span style="color:#f92672">=</span> 0xffff88801f8ccd20,
+i_ino <span style="color:#f92672">=</span> 0x275f, <span style="color:#f92672">{</span> ...
 ...
-(gdb)
-</code></pre>
-
-<p>That&rsquo;s indeed a huge amount of information that we could actually gather about
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>That&rsquo;s indeed a huge amount of information that we could actually gather about
 the file&rsquo;s <code>inode</code>, but for now, the only thing that really interests
 us is the <code>i_mode</code> number: <code>0x2180</code>. Checking on kernel&rsquo;s documentation we can
 see that this number means:</p>
-
 <ul>
 <li>0x80
-
 <ul>
 <li>S_IWUSR (Owner may write)</li>
-</ul></li>
+</ul>
+</li>
 <li>0x100
-
 <ul>
 <li>S_IRUSR (Owner may read)</li>
-</ul></li>
+</ul>
+</li>
 <li>0x2000
-
 <ul>
 <li>S_IFCHR (Character device)</li>
-</ul></li>
 </ul>
-
+</li>
+</ul>
 <p>So it seems our file has been setup correctly.</p>
-
 <p>Now lets investigate the memory region we are sharing between kernel and
 userspace:</p>
-
-<pre><code class="language-shell">(gdb) p /x *(struct vm_area_struct *)vma
-$14 = {vm_start = 0x7fe6c24bc000, vm_end = 0x7fe6c24bd000, vm_next = 0x0,
-vm_prev = 0x0, vm_rb = {__rb_parent_color = 0x0, rb_right = 0x0, rb_left =
-0x0}, rb_subtree_gap = 0x0, vm_mm = 0xffff88801d4cc400, vm_page_prot = {pgprot
-= 0x8000000000000025}, vm_flags = 0xd1, shared = {rb = { __rb_parent_color =
-0x0, rb_right = 0x0, rb_left = 0x0}, rb_subtree_last = 0x0}, anon_vma_chain =
-{next = 0xffff88801f98f5b8, prev = 0xffff88801f98f5b8}, anon_vma = 0x0, vm_ops
-= 0xffffffff8200ab20, vm_pgoff = 0x0, vm_file = 0xffff88801d7f8b00,
-vm_private_data = 0x0, swap_readahead_info = {counter = 0x0}, vm_policy = 0x0,
-vm_userfaultfd_ctx = {&lt;No data fields&gt;}}
-(gdb)
-</code></pre>
-
-<p>First of all, we need to remember that we only will understand what these
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> p /x *<span style="color:#f92672">(</span>struct vm_area_struct *<span style="color:#f92672">)</span>vma
+$14 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>vm_start <span style="color:#f92672">=</span> 0x7fe6c24bc000, vm_end <span style="color:#f92672">=</span> 0x7fe6c24bd000, vm_next <span style="color:#f92672">=</span> 0x0,
+vm_prev <span style="color:#f92672">=</span> 0x0, vm_rb <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>__rb_parent_color <span style="color:#f92672">=</span> 0x0, rb_right <span style="color:#f92672">=</span> 0x0, rb_left <span style="color:#f92672">=</span>
+0x0<span style="color:#f92672">}</span>, rb_subtree_gap <span style="color:#f92672">=</span> 0x0, vm_mm <span style="color:#f92672">=</span> 0xffff88801d4cc400, vm_page_prot <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>pgprot
+<span style="color:#f92672">=</span> 0x8000000000000025<span style="color:#f92672">}</span>, vm_flags <span style="color:#f92672">=</span> 0xd1, shared <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>rb <span style="color:#f92672">=</span> <span style="color:#f92672">{</span> __rb_parent_color <span style="color:#f92672">=</span>
+0x0, rb_right <span style="color:#f92672">=</span> 0x0, rb_left <span style="color:#f92672">=</span> 0x0<span style="color:#f92672">}</span>, rb_subtree_last <span style="color:#f92672">=</span> 0x0<span style="color:#f92672">}</span>, anon_vma_chain <span style="color:#f92672">=</span>
+<span style="color:#f92672">{</span>next <span style="color:#f92672">=</span> 0xffff88801f98f5b8, prev <span style="color:#f92672">=</span> 0xffff88801f98f5b8<span style="color:#f92672">}</span>, anon_vma <span style="color:#f92672">=</span> 0x0, vm_ops
+<span style="color:#f92672">=</span> 0xffffffff8200ab20, vm_pgoff <span style="color:#f92672">=</span> 0x0, vm_file <span style="color:#f92672">=</span> 0xffff88801d7f8b00,
+vm_private_data <span style="color:#f92672">=</span> 0x0, swap_readahead_info <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>counter <span style="color:#f92672">=</span> 0x0<span style="color:#f92672">}</span>, vm_policy <span style="color:#f92672">=</span> 0x0,
+vm_userfaultfd_ctx <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>&lt;No data fields&gt;<span style="color:#f92672">}}</span>
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>First of all, we need to remember that we only will understand what these
 attributes means if we understand the code it actually covers, and the first
 thing about <code>struct vm_area_struct</code> we need to know is that it is the
 information about a specific <em>virtual memory area</em>, but not a conjunction of
@@ -220,7 +190,6 @@ virtual memory, with a specific <em>start</em> (<code>vm_start</code>) and an <e
 Another important point to know is that the <code>struct vm_area_struct</code> passed to
 a <code>mmap()</code> call refers to a userspace area within the program&rsquo;s virtual
 memory. So, what do this all mean?</p>
-
 <ul>
 <li>it means the user&rsquo;s virtual address <code>0x7fe6c24bc000</code> and <code>0x7fe6c24bd000</code>
 are the inferior and superior limits for mapping the shared memory,
@@ -230,55 +199,43 @@ mapped in userspace program&rsquo;s memory: <code>0x1000</code>, which is equiva
 bytes, which is also equivalent to the size of a <em>memory page</em> (that was
 defined by myself, that&rsquo;s not always the case.</li>
 </ul>
-
 <p>These are the most important things to be known for now, considering the
 memory was actually mapped yet; these are the information passed by the user
 application in the <code>mmap()</code> call.</p>
-
 <p>So, moving the code forward, we now expects the kernel dynamically allocates a
 fresh memory on its own virtual space to then hand off to the user. Usually
 this operation looks like (considering we&rsquo;re speaking about a page size
 allocation):</p>
-
-<pre><code class="language-C">void *mem = kzalloc(PAGE_SIZE, GFP_KERNEL);
-</code></pre>
-
-<p>Unfortunately this call is usually optimized by the compiler, forcing us to
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>mem <span style="color:#f92672">=</span> kzalloc(PAGE_SIZE, GFP_KERNEL);
+</code></pre></div><p>Unfortunately this call is usually optimized by the compiler, forcing us to
 check for processors registers directly:</p>
-
-<pre><code class="language-shell">...
-(gdb) n
-55         char *mem = (char *)kzalloc(UMH_SHM_LEN, GFP_KERNEL);
-(gdb) ni
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">...
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> n
+<span style="color:#ae81ff">55</span>         char *mem <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>char *<span style="color:#f92672">)</span>kzalloc<span style="color:#f92672">(</span>UMH_SHM_LEN, GFP_KERNEL<span style="color:#f92672">)</span>;
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> ni
 ...
-(gdb) disassemble
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> disassemble
 ...
    0xffffffff814d01ec &lt;+60&gt;:    callq  0xffffffff811d3d30 &lt;kmem_cache_alloc_trace&gt;
-=&gt; 0xffffffff814d01f1 &lt;+65&gt;:    mov    $0x80000000,%edx
+<span style="color:#f92672">=</span>&gt; 0xffffffff814d01f1 &lt;+65&gt;:    mov    $0x80000000,%edx
    0xffffffff814d01f6 &lt;+70&gt;:    add    %rdx,%rax
 ...
-</code></pre>
-
-<p>To know which register is used for which purpose is completely architecture
+</code></pre></div><p>To know which register is used for which purpose is completely architecture
 dependent. So it&rsquo;s completely normal to not remember some definitions if
 you&rsquo;re not used to work directly with assembly or to the ABI of the system.
 The whole example I&rsquo;m presenting here is performed in a x86_64 architecture,
 thus the return value of a <code>call</code> instruction is kept in the <code>%rax</code> register.</p>
-
-<pre><code class="language-shell">(gdb) p /x $rax
-$18 = 0xffff88801f973000
-(gdb) x/12 $rax
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> p /x $rax
+$18 <span style="color:#f92672">=</span> 0xffff88801f973000
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> x/12 $rax
 0xffff88801f973000:     0x00000000      0x00000000      0x00000000      0x00000000
 0xffff88801f973010:     0x00000000      0x00000000      0x00000000      0x00000000
 0xffff88801f973020:     0x00000000      0x00000000      0x00000000      0x00000000
-(gdb)
-</code></pre>
-
-<p>All bytes are zero because the allocation was performed with <code>kzalloc()</code>,
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>All bytes are zero because the allocation was performed with <code>kzalloc()</code>,
 which zerofy the entire allocated memory before handing it off to the caller.
 And, by calling <code>virt_to_phys()</code> we know where in physical memory this virtual
 address resides: <code>0x1f973000</code>.</p>
-
 <p>This memory has the exact same size as the one requested by the user (although
 only 12 words were shown in the command) and will be mapped into user&rsquo;s
 virtual memory through the <code>remap_pfn_range()</code> function, which adds the new
@@ -286,9 +243,7 @@ memory area to the list of other memory areas owned by this specific process,
 known as <code>struct mm_struct</code>. The process of mapping goes down to the point
 where <em>page table entries</em> are manipulated, which is <strong>somewhat</strong> out of the
 scope of this post, but I would love to bring more content about it soon.</p>
-
 <h2 id="watching-the-communication">Watching the communication</h2>
-
 <p>Now that we have established the shared memory between kernel and userspace we
 need to keep watching the communication between these two parts. To do that we
 can setup a <em>watchpoint</em> to the memory shared for any modification there
@@ -296,96 +251,74 @@ happening. To know what memory address to use you basically need to think
 that: you&rsquo;re debugging the kernel process as a whole, so you have direct
 access to its virtual memory, but not to userspace memory nor physical
 address. With that said, we can easily setup a <em>watchpoint</em>:</p>
-
-<pre><code class="language-shell">
-(gdb) awatch *0xffff88801f973000
-Hardware access (read/write) watchpoint 2: *0xffff88801f973000
-(gdb) c
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> awatch *0xffff88801f973000
+Hardware access <span style="color:#f92672">(</span>read/write<span style="color:#f92672">)</span> watchpoint 2: *0xffff88801f973000
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> c
 Continuing.
 
 Program received signal SIGTRAP, Trace/breakpoint trap.
-__umh_health_check (arg=&lt;optimized out&gt;) at security/rztee/rztee_core.c:34
-34              strncpy(kreq-&gt;payload, &quot;hello&quot;, 6);
-(gdb) l
-30
-31              pr_info(&quot;rztee: healthy checking userspace program\n&quot;);
-32              kreq = (struct rztee_kreq *)shm_info-&gt;mm_map;
-33              kreq-&gt;id = 2;
-34              strncpy(kreq-&gt;payload, &quot;hello&quot;, 6);
-35              strncpy(kreq-&gt;pl_hash, &quot;world&quot;, 6);
-36              return 0;
-37      }
-38
-(gdb)
-</code></pre>
-
-<p>This specific point of code isn&rsquo;t upstream, it&rsquo;s part of a personal project.
+__umh_health_check <span style="color:#f92672">(</span>arg<span style="color:#f92672">=</span>&lt;optimized out&gt;<span style="color:#f92672">)</span> at security/rztee/rztee_core.c:34
+<span style="color:#ae81ff">34</span>              strncpy<span style="color:#f92672">(</span>kreq-&gt;payload, <span style="color:#e6db74">&#34;hello&#34;</span>, 6<span style="color:#f92672">)</span>;
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> l
+<span style="color:#ae81ff">30</span>
+<span style="color:#ae81ff">31</span>              pr_info<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;rztee: healthy checking userspace program\n&#34;</span><span style="color:#f92672">)</span>;
+<span style="color:#ae81ff">32</span>              kreq <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>struct rztee_kreq *<span style="color:#f92672">)</span>shm_info-&gt;mm_map;
+<span style="color:#ae81ff">33</span>              kreq-&gt;id <span style="color:#f92672">=</span> 2;
+<span style="color:#ae81ff">34</span>              strncpy<span style="color:#f92672">(</span>kreq-&gt;payload, <span style="color:#e6db74">&#34;hello&#34;</span>, 6<span style="color:#f92672">)</span>;
+<span style="color:#ae81ff">35</span>              strncpy<span style="color:#f92672">(</span>kreq-&gt;pl_hash, <span style="color:#e6db74">&#34;world&#34;</span>, 6<span style="color:#f92672">)</span>;
+<span style="color:#ae81ff">36</span>              <span style="color:#66d9ef">return</span> 0;
+<span style="color:#ae81ff">37</span>      <span style="color:#f92672">}</span>
+<span style="color:#ae81ff">38</span>
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>This specific point of code isn&rsquo;t upstream, it&rsquo;s part of a personal project.
 But <code>shm_info-&gt;mm_map</code> is a pointer to the memory we&rsquo;re sharing, so any
-modification to that will be visible to our user program. And <code>struct
-rztee_kreq</code> has the following layout:</p>
-
-<pre><code class="language-C">struct rztee_kreq {
-	int id;
-	char *payload[1024];
-	char *pl_hash;
+modification to that will be visible to our user program. And <code>struct rztee_kreq</code> has the following layout:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">struct</span> rztee_kreq {
+	<span style="color:#66d9ef">int</span> id;
+	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>payload[<span style="color:#ae81ff">1024</span>];
+	<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pl_hash;
 };
-</code></pre>
-
-<p>Right after the assignment <code>kreq-&gt;id = 2</code> the watchpoint is hit and thus we
+</code></pre></div><p>Right after the assignment <code>kreq-&gt;id = 2</code> the watchpoint is hit and thus we
 can inspect what have changed in the memory:</p>
-
-<pre><code class="language-shell">(gdb) x/gx 0xffff88801f973000
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> x/gx 0xffff88801f973000
 0xffff88801f973000:     0x0000000000000002
-(gdb)
-</code></pre>
-
-<p>If we let the next two lines to be executed, the resulting memory is:</p>
-
-<pre><code class="language-shell">(gdb) x/2gx 0xffff88801f973000
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</code></pre></div><p>If we let the next two lines to be executed, the resulting memory is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> x/2gx 0xffff88801f973000
 0xffff88801f973000:     0x6c6c656800000002      0x000000000000006f
-(gdb) x/2gx (0xffff88801f973000+1024)
+<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> x/2gx <span style="color:#f92672">(</span>0xffff88801f973000+1024<span style="color:#f92672">)</span>
 0xffff88801f973400:     0x6c726f7700000000      0x0000000000000064
-</code></pre>
-
-<p>And considering we know the data structure behind this data, plus some ASCII
+</code></pre></div><p>And considering we know the data structure behind this data, plus some ASCII
 encoding:</p>
-
-<pre><code class="language-C">int id = 2
-char *payload[1024] = &quot;hello&quot;
-char *pl_hash = &quot;world&quot;
-</code></pre>
-
-<h2 id="switching-to-userspace">Switching to userspace</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">int</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>payload[<span style="color:#ae81ff">1024</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello&#34;</span>
+<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pl_hash <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;world&#34;</span>
+</code></pre></div><h2 id="switching-to-userspace">Switching to userspace</h2>
 <p>Now, jumping directly to userspace, you only need a couple of calls to get the
 shared information:</p>
-
-<pre><code class="language-C">int main(void)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>)
 {
-	int shm_fd;
-	void *shm_mm;
-	struct rztee_kreq *kreq;
+	<span style="color:#66d9ef">int</span> shm_fd;
+	<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>shm_mm;
+	<span style="color:#66d9ef">struct</span> rztee_kreq <span style="color:#f92672">*</span>kreq;
 
-	shm_fd = open(&quot;/dev/umh_shm&quot;, O_RDONLY);
-	if (shm_fd == -1) {
-		// ... check error
-	}
-	shm_mm = mmap(NULL, 4096, PROT_READ, MAP_SHARED, shm_fd, 0);
-	if (shm_mm == MAP_FAILED) {
-		// ... check error
-	}
+	shm_fd <span style="color:#f92672">=</span> open(<span style="color:#e6db74">&#34;/dev/umh_shm&#34;</span>, O_RDONLY);
+	<span style="color:#66d9ef">if</span> (shm_fd <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+		<span style="color:#75715e">// ... check error
+</span><span style="color:#75715e"></span>	}
+	shm_mm <span style="color:#f92672">=</span> mmap(NULL, <span style="color:#ae81ff">4096</span>, PROT_READ, MAP_SHARED, shm_fd, <span style="color:#ae81ff">0</span>);
+	<span style="color:#66d9ef">if</span> (shm_mm <span style="color:#f92672">==</span> MAP_FAILED) {
+		<span style="color:#75715e">// ... check error
+</span><span style="color:#75715e"></span>	}
 
-	kreq = (struct rztee_kreq *)shm_mm;
-	printf(&quot;%d %s %s\n&quot;, kreq-&gt;id, kreq-&gt;payload, kreq-&gt;pl_hash);
+	kreq <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> rztee_kreq <span style="color:#f92672">*</span>)shm_mm;
+	printf(<span style="color:#e6db74">&#34;%d %s %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, kreq<span style="color:#f92672">-&gt;</span>id, kreq<span style="color:#f92672">-&gt;</span>payload, kreq<span style="color:#f92672">-&gt;</span>pl_hash);
 
-	return 0;
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 }
-</code></pre>
-
-<p>And as a result: <code>2 hello world</code>.</p>
-
+</code></pre></div><p>And as a result: <code>2 hello world</code>.</p>
 <h2 id="conclusion">Conclusion</h2>
-
 <p>Well, this post doesn&rsquo;t show you how to setup a shared memory between user and
 kernel space, of course, but it gives you a general idea on how to, somewhat,
 track the memory manipulation on kernel side in a real case using <strong>qemu</strong>
@@ -396,7 +329,6 @@ actually debugged in the exact same way to find <em>null pointer dereference</em
 kernel issues and which are generally not related to the memory management
 subsystem, but with another piece of code screwing things up while
 manipulating their own memory mess.</p>
-
 <p>Kernel development are sometimes seen as a huge beast, but with some basic
 debugging knowledge you can actually walkthrough parts you would like to
 better understand. Kernel debugging can also seem some &ldquo;beast&rdquo;, but once you
@@ -404,10 +336,8 @@ start digging into it you automatically start learning assembly language,
 understand memory management and usage, basic data structures used within
 kernel, and many other things. There are no magics&hellip; <strong><em>cough cough</em></strong>&hellip;
 sometimes though.</p>
-
 <p>I really hope this guidelines, for such specific case, helps you somehow. Feel
 free to ping me on IRC or Twitter!</p>
-
 <p>Many thanks!</p>
 
 </main>

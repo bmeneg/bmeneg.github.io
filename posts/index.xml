@@ -6,11 +6,7 @@
     <description>Recent content in Posts on bmeneg&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://bmeneg.com/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kernel debugging - memory case</title>
       <link>https://bmeneg.com/post/kernel-debugging-memory-case/</link>
@@ -55,7 +51,8 @@ These two protocols are used to the same purpose: provide a way to two different
       
       <guid>https://bmeneg.com/post/network-stack-part-1-application-layer/</guid>
       <description>One of the things I have been studying in the past few days is how the networking stack works in our lives nowadays:
- What are the standard protocols? How these protocols work? How everything are integrated?  These questions guided me towards a &amp;ldquo;playing around&amp;rdquo; exercise: build a simple HTTP server and follow all the steps that a simple data packet goes throughout the networking stack (top-down approach).</description>
+ What are the standard protocols? How these protocols work? How everything are integrated?  These questions guided me towards a &amp;ldquo;playing around&amp;rdquo; exercise: build a simple HTTP server and follow all the steps that a simple data packet goes throughout the networking stack (top-down approach).
+Some tooling necessary to either allow us to send a packet through the stack and also to follow its steps downwards.</description>
     </item>
     
     <item>

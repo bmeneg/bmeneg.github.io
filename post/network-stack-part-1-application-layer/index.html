@@ -31,114 +31,87 @@
 </div>
 
 <main>
-
-
 <p>One of the things I have been studying in the past few days is how the
 networking stack works in our lives nowadays:</p>
-
 <ul>
 <li>What are the standard protocols?</li>
 <li>How these protocols work?</li>
 <li>How everything are integrated?</li>
 </ul>
-
 <p>These questions guided me towards a &ldquo;playing around&rdquo; exercise: build a simple
 HTTP server and follow all the steps that a simple data packet goes throughout
 the networking stack (top-down approach).</p>
-
 <p>Some tooling necessary to either allow us to send a packet through the stack
 and also to follow its steps downwards. Each tool are going to be presented as
 required.</p>
-
 <h1 id="application-layer">Application layer</h1>
-
 <p>The application layer is basically where the user start requesting things in
 order to get a result or a reply from something/one. Any action performed by
 the user in a web browser or in a video streaming application ends up in a
 packet being sent to a server or to another user somewhere in the internet.</p>
-
 <p>That is where we are going to start our journey: right in the top of the
 networking stack.</p>
-
 <h2 id="our-http-server">Our HTTP server</h2>
-
 <p>I&rsquo;m going to use the Perl language to build our HTTP server. I won&rsquo;t get in
 details around the code nor how the server is implemented underneath, although
 I might present some information about the protocol itself.</p>
-
 <p>The following code will be saved as <em>http-server.pl</em>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl"><span style="color:#66d9ef">use</span> warnings;
+<span style="color:#66d9ef">use</span> strict;
 
-<pre><code class="language-perl">use warnings;
-use strict;
+<span style="color:#66d9ef">use</span> Net::Async::HTTP::Server;
+<span style="color:#66d9ef">use</span> IO::Async::Loop;
+<span style="color:#66d9ef">use</span> HTTP::Response;
+<span style="color:#66d9ef">use</span> HTTP::Status;
 
-use Net::Async::HTTP::Server;
-use IO::Async::Loop;
-use HTTP::Response;
-use HTTP::Status;
+<span style="color:#66d9ef">sub</span> <span style="color:#a6e22e">handle_request</span> {
+    <span style="color:#66d9ef">my</span> $self <span style="color:#f92672">=</span> shift;
+    <span style="color:#66d9ef">my</span> ($req) <span style="color:#f92672">=</span> @_;
+    <span style="color:#66d9ef">my</span> $resp <span style="color:#f92672">=</span> HTTP::Response<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(HTTP::Status::HTTP_OK);
 
-sub handle_request {
-    my $self = shift;
-    my ($req) = @_;
-    my $resp = HTTP::Response-&gt;new(HTTP::Status::HTTP_OK);
-
-    $resp-&gt;add_content(&quot;You have requested: &quot;.$req-&gt;path.&quot;\n&quot;);
-    $resp-&gt;content_type(&quot;text/plain&quot;);
-    $resp-&gt;content_length(length $resp-&gt;content);
-    $req-&gt;respond($resp);
+    $resp<span style="color:#f92672">-&gt;</span>add_content(<span style="color:#e6db74">&#34;You have requested: &#34;</span><span style="color:#f92672">.</span>$req<span style="color:#f92672">-&gt;</span>path<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;\n&#34;</span>);
+    $resp<span style="color:#f92672">-&gt;</span>content_type(<span style="color:#e6db74">&#34;text/plain&#34;</span>);
+    $resp<span style="color:#f92672">-&gt;</span>content_length(length $resp<span style="color:#f92672">-&gt;</span>content);
+    $req<span style="color:#f92672">-&gt;</span>respond($resp);
 }
 
-my $async_loop = IO::Async::Loop-&gt;new();
-my $http_server = Net::Async::HTTP::Server-&gt;new(
-    on_request =&gt; \&amp;handle_request
+<span style="color:#66d9ef">my</span> $async_loop <span style="color:#f92672">=</span> IO::Async::Loop<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>();
+<span style="color:#66d9ef">my</span> $http_server <span style="color:#f92672">=</span> Net::Async::HTTP::Server<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(
+    on_request <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">\&amp;</span>handle_request
 );
 
-$async_loop-&gt;add($http_server);
-$http_server-&gt;listen(
-    addr =&gt; {
-        family =&gt; &quot;inet&quot;,
-        socktype =&gt; &quot;stream&quot;,
-        port =&gt; 8080
+$async_loop<span style="color:#f92672">-&gt;</span>add($http_server);
+$http_server<span style="color:#f92672">-&gt;</span>listen(
+    addr <span style="color:#f92672">=&gt;</span> {
+        family <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;inet&#34;</span>,
+        socktype <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;stream&#34;</span>,
+        port <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">8080</span>
     },
-)-&gt;get();
+)<span style="color:#f92672">-&gt;</span>get();
 
-print(&quot;Listening...\n&quot;);
-$async_loop-&gt;run();
-</code></pre>
-
-<p>With that code running you are already ready to receive requests:</p>
-
-<pre><code class="language-shell">$ perl http-server.pl
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Listening...\n&#34;</span>);
+$async_loop<span style="color:#f92672">-&gt;</span>run();
+</code></pre></div><p>With that code running you are already ready to receive requests:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ perl http-server.pl
 Listening...
-</code></pre>
-
-<p>And in another shell:</p>
-
-<pre><code class="language-shell">$ curl http://localhost:8080
+</code></pre></div><p>And in another shell:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl http://localhost:8080
 You have requested: /
-</code></pre>
-
-<h2 id="overview-on-http-protocol-rfc-2616-https-tools-ietf-org-html-rfc2616">Overview on HTTP protocol (<a href="https://tools.ietf.org/html/rfc2616">RFC 2616</a>)</h2>
-
+</code></pre></div><h2 id="overview-on-http-protocol-rfc-2616httpstoolsietforghtmlrfc2616">Overview on HTTP protocol (<a href="https://tools.ietf.org/html/rfc2616">RFC 2616</a>)</h2>
 <p>Being able to send and receive requests is the first step we need to achieve to
 start analysing the stack. Now we need to get our hands somewhat dirty within
 the HTTP protocol itself to gather some useful information for the rest of our
 journey.</p>
-
 <p>HTTP workflow runs basically around two basic concepts: <strong>requests</strong> and
 <strong>responses</strong> for those requests. Although it might seems pretty simple, the
 protocol is a pretty extensible one, holding a lot of headers that may get
 included within each request and/or response. It is out of the scope of this
 article to get into details about HTTP protocol and, because of that, we are
 going to present only an overview of these concepts.</p>
-
 <h3 id="requests">Requests</h3>
-
 <p>An example of HTTP request is:</p>
-
-<p><img src="/imgs/http-request.png" alt="Got from MDN web docs" /></p>
-
+<p><img src="/imgs/http-request.png" alt="Got from MDN web docs"></p>
 <p>Which is composed of four main parts:</p>
-
 <ul>
 <li><strong>method</strong>: a verb that defines the operation the user wish to perform to the
 server. Although usually it is limited to <em>GET</em> and <em>POST</em> methods to,
@@ -151,10 +124,8 @@ ways the server could handle the request;</li>
 <li><strong>body</strong>: in case the method chosen is <em>POST</em> a body may appear under the
 headers.</li>
 </ul>
-
 <p>Using our brand new server we can check the request with:</p>
-
-<pre><code class="language-shell">$ curl -v http://127.0.0.1:8080
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl -v http://127.0.0.1:8080
 ...
 &gt; GET / HTTP/1.1
 &gt; Host: 127.0.0.1:8080
@@ -162,19 +133,12 @@ headers.</li>
 &gt; Accept: */*
 &gt;
 ...
-</code></pre>
-
-<p>Some other informations are printed out with this command, but the request is
+</code></pre></div><p>Some other informations are printed out with this command, but the request is
 only these four lines.</p>
-
 <h3 id="responses">Responses</h3>
-
 <p>Now, a response example is:</p>
-
-<p><img src="/imgs/http-response.png" alt="Got from MDN web docs" /></p>
-
+<p><img src="/imgs/http-response.png" alt="Got from MDN web docs"></p>
 <p>Which is composed by the following fields:</p>
-
 <ul>
 <li><strong>version</strong>: HTTP protocol version;</li>
 <li><strong>status</strong>: an integer code that represents the status of the request;</li>
@@ -183,40 +147,30 @@ only these four lines.</p>
 used by the user for any reason;</li>
 <li><strong>body</strong>: the response content <em>per se</em>.</li>
 </ul>
-
 <p>The same command used to check request headers we can use to check the
 response&rsquo;s ones:</p>
-
-<pre><code class="language-shell">$ curl -v http://127.0.0.1:8080
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl -v http://127.0.0.1:8080
 ...
-&lt; HTTP/1.1 200 OK
-&lt; Date: Wed, 22 May 2019 04:06:21 GMT
-&lt; Content-Length: 22
-&lt; Content-Type: text/plain; charset=utf-8
+&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+&lt; Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:06:21 GMT
+&lt; Content-Length: <span style="color:#ae81ff">22</span>
+&lt; Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
 &lt;
 You have requested: /
 ...
-</code></pre>
-
-<h2 id="stack-analysis">Stack analysis</h2>
-
+</code></pre></div><h2 id="stack-analysis">Stack analysis</h2>
 <p>For this exercise in particular we are interested in a couple of informations
 that are present in HTTP packet: being them the <em>Date</em>, that we are planning to
 use as a timestamp as checking mechanism later on, and <em>Content-Length</em> which
 will help us to understand some lower level protocols behaviors in certain
 situations.</p>
-
 <p>You can keep listening your requests and responses in real-time with a tool
 called <em>tcpflow</em> which keep track of all TCP connections being performed
 through one of your network interfaces:</p>
-
-<pre><code class="language-shell"># tcpflow -c -i &lt;interface&gt;
-</code></pre>
-
-<p>While in the another shell (or even through a normal browser) you keep
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tcpflow -c -i &lt;interface&gt;</span>
+</code></pre></div><p>While in the another shell (or even through a normal browser) you keep
 sending requests to your server.</p>
-
-<pre><code class="language-shell"># tcpflow -c -i lo
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tcpflow -c -i lo</span>
 ...
 ::1.40138-::1.08080: GET / HTTP/1.1
 Host: 127.0.0.1:8080
@@ -224,33 +178,27 @@ User-Agent: curl/7.61.1
 Accept: */*
 
 
-::1.08080-::1.40138: HTTP/1.1 200 OK
-Date: Wed, 22 May 2019 04:32:35 GMT
-Content-Length: 22
-Content-Type: text/plain; charset=utf-8
+::1.08080-::1.40138: HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:32:35 GMT
+Content-Length: <span style="color:#ae81ff">22</span>
+Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
 
 You have requested: /
-</code></pre>
-
-<p>Keep in mind that HTTP is an <em>application protocol</em> and has no clue about IP
+</code></pre></div><p>Keep in mind that HTTP is an <em>application protocol</em> and has no clue about IP
 addresses. I mean, although it has the <em>Host</em> header it is used to pass the
 information to an underlying protocol known as Internet Protocol (IP), which
 will actively work with it.</p>
-
 <p>When the time is come new requests are going to happen and possible greater
 messages as responses bodies as well, but we guarantee that nothing will change
 in our server, no magic will be added, only a few characters to the response
 content.</p>
-
 <p>Just to finish this first part of the series I think it is worth to mention
 that: so far I have used only IP addresses to refer to my <em>localhost</em>,
 127.0.0.1, and it happened because I was avoiding to mix information of two
 application layer protocols, HTTP and DNS.</p>
-
 <p>In short, DNS is the <em>Domain Name System</em> which is a mechanism to translate
 server&rsquo;s names to numerical addresses (IP), since the machines only know about
 the numbers, while names are interesting only to humans.</p>
-
 <p>The idea here is not to discuss how neither DNS and HTTP works internally, but
 how the network stack is bundled together. Because of that I&rsquo;m stopping here
 and leaving a link to the <a href="/posts/net-stack-transport">next series part</a>.</p>
