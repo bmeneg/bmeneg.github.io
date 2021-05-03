@@ -37,7 +37,7 @@ diferente para cada operação, sendo estas quantidades:
 * PAGE: unidade mínima para a operação PROGRAM;
 * BLOCK: unicadade mínimo para a operação ERASE.
 
-<center>![Arquitetura interna NAND](/imgs/nand-arch.png)</center>
+![Arquitetura interna NAND](/imgs/nand-arch.png)
 
 Na imagem é possível observar quão lenta é a operação de ERASE em comparação
 com a PROGRAM, sendo assim, é importante realizar o máximos de PROGRAMs
@@ -49,7 +49,7 @@ a categoria da NAND e seu estado muda de acordo a tensão aplicada. A figura
 seguinte mostra este esquema que parece ser um tanto estranho quando comparado
 com os tipos convencionais de memória.
 
-<center>![Células NAND](/imgs/nand-cell.png)</center>
+![Células NAND](/imgs/nand-cell.png)
 
 ## Os problemas
 
@@ -79,9 +79,7 @@ multinível (MLC e TLC). A figura a seguir exemplifica de maneira simples o que
 mudança de tensão em um ponto gera pequenas variações de tensão por pequeno
 período de tempo nas regiões adjacentes à modificada.
 
-<center>
 ![Disturbio causado em regiões vizinhas](/imgs/nand-operation-disturbance.png)
-</center>
 
 Outro problema muito sério quanto a isso é que com a forma como estas memórias
 foram projetadas pode ocorrer que diferentes bits dentro de uma mesma célula
@@ -93,7 +91,7 @@ uma única vez é possível também que diferentes arquivos em um sistema de
 arquivo seja corrompido pela falha de uma única célula, gerando erros
 totalmente não relacionados.
 
-<center>![Páginas pareadas](/imgs/nand-paired-pages.png)</center>
+![Páginas pareadas](/imgs/nand-paired-pages.png)
 
 Sendo assim, além do gerenciamento de escrita e leitura em excesso na memória
 ser extremamente necessário, tanto pela aplicação como pelo sistema de

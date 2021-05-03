@@ -47,7 +47,7 @@ protocol might add to our packet's length up to 60 bytes of information.
 
 Below is an image representing all header fields available:
 
-<center>![TCP Headers](/imgs/tcp-headers.png)</center>
+![TCP Headers](/imgs/tcp-headers.png)
 
 As the protocol's name already states, TCP is basically a protocol to control
 the delivery of packets through the network to end user applications. What most
@@ -183,7 +183,7 @@ channel congestion.
 The following picture helps to understand the above statement about the
 threshold, took from the Computer Network book from Kurose & Ross.
 
-<center>![TCP Congestion Control](/imgs/tcp-cwnds.png)</center>
+![TCP Congestion Control](/imgs/tcp-cwnds.png)
 
 Just for your information, there are more than one algorithms of TCP congestion
 control, each one might have a different focus, resulting in different
@@ -202,7 +202,7 @@ anything else other than the basic fields that a transport protocol should
 handle: _source_ and _destination_ port, the length of the header and the
 checksum of the whole datagram.
 
-<center>![UDP Headers](/imgs/udp-headers.png)</center>
+![UDP Headers](/imgs/udp-headers.png)
 
 Because of that there isn't much to say about the UDP other than: it is the
 materialization of the most basic concept of what can be a transport layer

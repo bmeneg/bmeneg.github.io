@@ -38,7 +38,9 @@ text processing, try to use what you already have and didn't know_.
 As many other Unix tools, _awk_ handles _lines_ as it input source; this lines
 are then matched against the following rule:
 
-<center>`<pattern> { <action> }`</center>
+```
+<pattern> { <action> }
+```
 
 being `pattern` the match that triggers the `action`.
 

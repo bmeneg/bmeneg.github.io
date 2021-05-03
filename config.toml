@@ -13,6 +13,9 @@ footer = "[Github](https://github.com/bmeneguele) | [Twitter](https://twitter.co
 [permalinks]
 posts = "/post/:slug"
 
+[markup.goldmark.renderer]
+unsafe= true
+
 [[menu.main]]
 name = "Home"
 url = "/"
