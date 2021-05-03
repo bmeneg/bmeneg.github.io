@@ -64,7 +64,7 @@ added to our whole packet size. That is due to header fields that are being
 prefixed/suffixed each time a protocol manipulates it. For instance, TCP
 protocol might add to our packet&rsquo;s length up to 60 bytes of information.</p>
 <p>Below is an image representing all header fields available:</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/tcp-headers.png" alt="TCP Headers"></p>
 <p>As the protocol&rsquo;s name already states, TCP is basically a protocol to control
 the delivery of packets through the network to end user applications. What most
 shines herein is the fact that TCP guarantees certain principles to the application
@@ -178,7 +178,7 @@ value, thus dropping the data transmission and possibly helping controlling the
 channel congestion.</p>
 <p>The following picture helps to understand the above statement about the
 threshold, took from the Computer Network book from Kurose &amp; Ross.</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/tcp-cwnds.png" alt="TCP Congestion Control"></p>
 <p>Just for your information, there are more than one algorithms of TCP congestion
 control, each one might have a different focus, resulting in different
 behaviors. As you can see in the last picture, there were two different
@@ -192,7 +192,7 @@ to the application layer handle, in case it feels it&rsquo;s necessary somehow.<
 anything else other than the basic fields that a transport protocol should
 handle: <em>source</em> and <em>destination</em> port, the length of the header and the
 checksum of the whole datagram.</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/udp-headers.png" alt="UDP Headers"></p>
 <p>Because of that there isn&rsquo;t much to say about the UDP other than: it is the
 materialization of the most basic concept of what can be a transport layer
 protocol, there aren&rsquo;t any kind of guarantee regarding delivery or link in

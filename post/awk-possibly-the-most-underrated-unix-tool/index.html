@@ -60,8 +60,8 @@ text processing, try to use what you already have and didn&rsquo;t know</em>.</p
 <h2 id="basic-structure">Basic structure</h2>
 <p>As many other Unix tools, <em>awk</em> handles <em>lines</em> as it input source; this lines
 are then matched against the following rule:</p>
-<!-- raw HTML omitted -->
-<p>being <code>pattern</code> the match that triggers the <code>action</code>.</p>
+<pre><code>&lt;pattern&gt; { &lt;action&gt; }
+</code></pre><p>being <code>pattern</code> the match that triggers the <code>action</code>.</p>
 <p>Although <code>pattern</code> can assume &ldquo;any&rdquo; value, there are two special ones: <code>BEGIN</code>
 and <code>END</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk">BEGIN { <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">action</span><span style="color:#f92672">&gt;</span> }
@@ -209,32 +209,32 @@ on and also possibly with some issues, is as follows:</p>
     <span style="color:#a6e22e">commit_id</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">2</span> 
     <span style="color:#a6e22e">total_patches</span><span style="color:#f92672">++</span>
     <span style="color:#75715e"># get next input, ignoring next patterns</span>
-    <span style="color:#66d9ef">next</span>
+    <span style="color:#a6e22e">next</span>
 }
 <span style="color:#e6db74">/^From: /</span> {
     <span style="color:#75715e"># split the whole input using &#39;&lt;&#39; as delimiter</span>
     <span style="color:#a6e22e">nf</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">split</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">a</span>, <span style="color:#e6db74">&#34;&lt;&#34;</span>)
     <span style="color:#75715e"># get everything after 7th char</span>
     <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>], <span style="color:#ae81ff">7</span>)
-    <span style="color:#66d9ef">next</span>
+    <span style="color:#a6e22e">next</span>
 }
 <span style="color:#e6db74">/^Date: /</span> {
     <span style="color:#a6e22e">date_dmy</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">3</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">4</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">5</span>
-    <span style="color:#66d9ef">next</span>
+    <span style="color:#a6e22e">next</span>
 }
 <span style="color:#e6db74">/^Subject: /</span> {
     <span style="color:#75715e"># you also can recheck for a substring with regex</span>
     <span style="color:#75715e"># ignore merges and tagging commits</span>
     <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;([Rr]evert)?.*\&#34;?[Mm]erge.*&#34;</span>) {
-        <span style="color:#66d9ef">next</span>
+        <span style="color:#a6e22e">next</span>
     } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;Linu[xs] [0-9].[0-9]&#34;</span>) {
-        <span style="color:#66d9ef">next</span> 
+        <span style="color:#a6e22e">next</span> 
     }    
     <span style="color:#a6e22e">subject</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>)
     <span style="color:#a6e22e">total_proc_patches</span><span style="color:#f92672">++</span>
     <span style="color:#75715e"># NR = number of records (inputs)</span>
     <span style="color:#a6e22e">subj_nr</span> <span style="color:#f92672">=</span> NR
-    <span style="color:#66d9ef">next</span>
+    <span style="color:#a6e22e">next</span>
 }
 {
     <span style="color:#66d9ef">if</span> (NR <span style="color:#f92672">==</span> <span style="color:#a6e22e">subj_nr</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) {

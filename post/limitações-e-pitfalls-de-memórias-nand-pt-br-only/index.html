@@ -60,7 +60,7 @@ diferente para cada operação, sendo estas quantidades:</p>
 <li>PAGE: unidade mínima para a operação PROGRAM;</li>
 <li>BLOCK: unicadade mínimo para a operação ERASE.</li>
 </ul>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/nand-arch.png" alt="Arquitetura interna NAND"></p>
 <p>Na imagem é possível observar quão lenta é a operação de ERASE em comparação
 com a PROGRAM, sendo assim, é importante realizar o máximos de PROGRAMs
 possível, antes de realizar um ERASE.</p>
@@ -69,7 +69,7 @@ célula da memória, sendo que a quantidade de bits presente na célular varia c
 a categoria da NAND e seu estado muda de acordo a tensão aplicada. A figura
 seguinte mostra este esquema que parece ser um tanto estranho quando comparado
 com os tipos convencionais de memória.</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/nand-cell.png" alt="Células NAND"></p>
 <h2 id="os-problemas">Os problemas</h2>
 <p>O problema surge justamente neste ponto: quando <em>uma célula passa a representar
 o estado de dois ou mais bits</em>. Isto pode parecer muito bom, já que a
@@ -94,7 +94,7 @@ multinível (MLC e TLC). A figura a seguir exemplifica de maneira simples o que
 é este problema. E de forma resumida pode ser dito que isso ocorre pois a
 mudança de tensão em um ponto gera pequenas variações de tensão por pequeno
 período de tempo nas regiões adjacentes à modificada.</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/nand-operation-disturbance.png" alt="Disturbio causado em regiões vizinhas"></p>
 <p>Outro problema muito sério quanto a isso é que com a forma como estas memórias
 foram projetadas pode ocorrer que diferentes bits dentro de uma mesma célula
 pertencer a PAGEs diferentes. Desta forma um único erro (através de <em>bit flip</em>
@@ -104,7 +104,7 @@ Além disso, como é possível que dados em diferentes blocos sejam corrompidos 
 uma única vez é possível também que diferentes arquivos em um sistema de
 arquivo seja corrompido pela falha de uma única célula, gerando erros
 totalmente não relacionados.</p>
-<!-- raw HTML omitted -->
+<p><img src="/imgs/nand-paired-pages.png" alt="Páginas pareadas"></p>
 <p>Sendo assim, além do gerenciamento de escrita e leitura em excesso na memória
 ser extremamente necessário, tanto pela aplicação como pelo sistema de
 arquivos, deve-se levar em conta estas peculariedades da memória. No entanto os
