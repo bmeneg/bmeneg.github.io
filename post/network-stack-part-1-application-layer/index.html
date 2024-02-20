@@ -56,48 +56,48 @@ networking stack.</p>
 details around the code nor how the server is implemented underneath, although
 I might present some information about the protocol itself.</p>
 <p>The following code will be saved as <em>http-server.pl</em>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl"><span style="color:#66d9ef">use</span> warnings;
-<span style="color:#66d9ef">use</span> strict;
-
-<span style="color:#66d9ef">use</span> Net::Async::HTTP::Server;
-<span style="color:#66d9ef">use</span> IO::Async::Loop;
-<span style="color:#66d9ef">use</span> HTTP::Response;
-<span style="color:#66d9ef">use</span> HTTP::Status;
-
-<span style="color:#66d9ef">sub</span> <span style="color:#a6e22e">handle_request</span> {
-    <span style="color:#66d9ef">my</span> $self <span style="color:#f92672">=</span> shift;
-    <span style="color:#66d9ef">my</span> ($req) <span style="color:#f92672">=</span> @_;
-    <span style="color:#66d9ef">my</span> $resp <span style="color:#f92672">=</span> HTTP::Response<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(HTTP::Status::HTTP_OK);
-
-    $resp<span style="color:#f92672">-&gt;</span>add_content(<span style="color:#e6db74">&#34;You have requested: &#34;</span><span style="color:#f92672">.</span>$req<span style="color:#f92672">-&gt;</span>path<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;\n&#34;</span>);
-    $resp<span style="color:#f92672">-&gt;</span>content_type(<span style="color:#e6db74">&#34;text/plain&#34;</span>);
-    $resp<span style="color:#f92672">-&gt;</span>content_length(length $resp<span style="color:#f92672">-&gt;</span>content);
-    $req<span style="color:#f92672">-&gt;</span>respond($resp);
-}
-
-<span style="color:#66d9ef">my</span> $async_loop <span style="color:#f92672">=</span> IO::Async::Loop<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>();
-<span style="color:#66d9ef">my</span> $http_server <span style="color:#f92672">=</span> Net::Async::HTTP::Server<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(
-    on_request <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">\&amp;</span>handle_request
-);
-
-$async_loop<span style="color:#f92672">-&gt;</span>add($http_server);
-$http_server<span style="color:#f92672">-&gt;</span>listen(
-    addr <span style="color:#f92672">=&gt;</span> {
-        family <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;inet&#34;</span>,
-        socktype <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;stream&#34;</span>,
-        port <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">8080</span>
-    },
-)<span style="color:#f92672">-&gt;</span>get();
-
-<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Listening...\n&#34;</span>);
-$async_loop<span style="color:#f92672">-&gt;</span>run();
-</code></pre></div><p>With that code running you are already ready to receive requests:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ perl http-server.pl
-Listening...
-</code></pre></div><p>And in another shell:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl http://localhost:8080
-You have requested: /
-</code></pre></div><h2 id="overview-on-http-protocol-rfc-2616httpstoolsietforghtmlrfc2616">Overview on HTTP protocol (<a href="https://tools.ietf.org/html/rfc2616">RFC 2616</a>)</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-perl" data-lang="perl"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> warnings;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> strict;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> Net::Async::HTTP::Server;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> IO::Async::Loop;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> HTTP::Response;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> HTTP::Status;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">sub</span> <span style="color:#a6e22e">handle_request</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">my</span> $self <span style="color:#f92672">=</span> shift;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">my</span> ($req) <span style="color:#f92672">=</span> @_;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">my</span> $resp <span style="color:#f92672">=</span> HTTP::Response<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(HTTP::Status::HTTP_OK);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    $resp<span style="color:#f92672">-&gt;</span>add_content(<span style="color:#e6db74">&#34;You have requested: &#34;</span><span style="color:#f92672">.</span>$req<span style="color:#f92672">-&gt;</span>path<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;\n&#34;</span>);
+</span></span><span style="display:flex;"><span>    $resp<span style="color:#f92672">-&gt;</span>content_type(<span style="color:#e6db74">&#34;text/plain&#34;</span>);
+</span></span><span style="display:flex;"><span>    $resp<span style="color:#f92672">-&gt;</span>content_length(length $resp<span style="color:#f92672">-&gt;</span>content);
+</span></span><span style="display:flex;"><span>    $req<span style="color:#f92672">-&gt;</span>respond($resp);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">my</span> $async_loop <span style="color:#f92672">=</span> IO::Async::Loop<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">my</span> $http_server <span style="color:#f92672">=</span> Net::Async::HTTP::Server<span style="color:#f92672">-&gt;</span><span style="color:#66d9ef">new</span>(
+</span></span><span style="display:flex;"><span>    on_request <span style="color:#f92672">=&gt;</span> <span style="color:#f92672">\&amp;</span>handle_request
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$async_loop<span style="color:#f92672">-&gt;</span>add($http_server);
+</span></span><span style="display:flex;"><span>$http_server<span style="color:#f92672">-&gt;</span>listen(
+</span></span><span style="display:flex;"><span>    addr <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>        family <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;inet&#34;</span>,
+</span></span><span style="display:flex;"><span>        socktype <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;stream&#34;</span>,
+</span></span><span style="display:flex;"><span>        port <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">-&gt;</span>get();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Listening...\n&#34;</span>);
+</span></span><span style="display:flex;"><span>$async_loop<span style="color:#f92672">-&gt;</span>run();
+</span></span></code></pre></div><p>With that code running you are already ready to receive requests:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ perl http-server.pl
+</span></span><span style="display:flex;"><span>Listening...
+</span></span></code></pre></div><p>And in another shell:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl http://localhost:8080
+</span></span><span style="display:flex;"><span>You have requested: /
+</span></span></code></pre></div><h2 id="overview-on-http-protocol-rfc-2616httpstoolsietforghtmlrfc2616">Overview on HTTP protocol (<a href="https://tools.ietf.org/html/rfc2616">RFC 2616</a>)</h2>
 <p>Being able to send and receive requests is the first step we need to achieve to
 start analysing the stack. Now we need to get our hands somewhat dirty within
 the HTTP protocol itself to gather some useful information for the rest of our
@@ -125,15 +125,15 @@ ways the server could handle the request;</li>
 headers.</li>
 </ul>
 <p>Using our brand new server we can check the request with:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl -v http://127.0.0.1:8080
-...
-&gt; GET / HTTP/1.1
-&gt; Host: 127.0.0.1:8080
-&gt; User-Agent: curl/7.61.1
-&gt; Accept: */*
-&gt;
-...
-</code></pre></div><p>Some other informations are printed out with this command, but the request is
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -v http://127.0.0.1:8080
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>&gt; GET / HTTP/1.1
+</span></span><span style="display:flex;"><span>&gt; Host: 127.0.0.1:8080
+</span></span><span style="display:flex;"><span>&gt; User-Agent: curl/7.61.1
+</span></span><span style="display:flex;"><span>&gt; Accept: */*
+</span></span><span style="display:flex;"><span>&gt;
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>Some other informations are printed out with this command, but the request is
 only these four lines.</p>
 <h3 id="responses">Responses</h3>
 <p>Now, a response example is:</p>
@@ -149,16 +149,16 @@ used by the user for any reason;</li>
 </ul>
 <p>The same command used to check request headers we can use to check the
 response&rsquo;s ones:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ curl -v http://127.0.0.1:8080
-...
-&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
-&lt; Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:06:21 GMT
-&lt; Content-Length: <span style="color:#ae81ff">22</span>
-&lt; Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
-&lt;
-You have requested: /
-...
-</code></pre></div><h2 id="stack-analysis">Stack analysis</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ curl -v http://127.0.0.1:8080
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:06:21 GMT
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#ae81ff">22</span>
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
+</span></span><span style="display:flex;"><span>&lt;
+</span></span><span style="display:flex;"><span>You have requested: /
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><h2 id="stack-analysis">Stack analysis</h2>
 <p>For this exercise in particular we are interested in a couple of informations
 that are present in HTTP packet: being them the <em>Date</em>, that we are planning to
 use as a timestamp as checking mechanism later on, and <em>Content-Length</em> which
@@ -167,24 +167,24 @@ situations.</p>
 <p>You can keep listening your requests and responses in real-time with a tool
 called <em>tcpflow</em> which keep track of all TCP connections being performed
 through one of your network interfaces:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tcpflow -c -i &lt;interface&gt;</span>
-</code></pre></div><p>While in the another shell (or even through a normal browser) you keep
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># tcpflow -c -i &lt;interface&gt;</span>
+</span></span></code></pre></div><p>While in the another shell (or even through a normal browser) you keep
 sending requests to your server.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tcpflow -c -i lo</span>
-...
-::1.40138-::1.08080: GET / HTTP/1.1
-Host: 127.0.0.1:8080
-User-Agent: curl/7.61.1
-Accept: */*
-
-
-::1.08080-::1.40138: HTTP/1.1 <span style="color:#ae81ff">200</span> OK
-Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:32:35 GMT
-Content-Length: <span style="color:#ae81ff">22</span>
-Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
-
-You have requested: /
-</code></pre></div><p>Keep in mind that HTTP is an <em>application protocol</em> and has no clue about IP
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># tcpflow -c -i lo</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>::1.40138-::1.08080: GET / HTTP/1.1
+</span></span><span style="display:flex;"><span>Host: 127.0.0.1:8080
+</span></span><span style="display:flex;"><span>User-Agent: curl/7.61.1
+</span></span><span style="display:flex;"><span>Accept: */*
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>::1.08080-::1.40138: HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+</span></span><span style="display:flex;"><span>Date: Wed, <span style="color:#ae81ff">22</span> May <span style="color:#ae81ff">2019</span> 04:32:35 GMT
+</span></span><span style="display:flex;"><span>Content-Length: <span style="color:#ae81ff">22</span>
+</span></span><span style="display:flex;"><span>Content-Type: text/plain; charset<span style="color:#f92672">=</span>utf-8
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>You have requested: /
+</span></span></code></pre></div><p>Keep in mind that HTTP is an <em>application protocol</em> and has no clue about IP
 addresses. I mean, although it has the <em>Host</em> header it is used to pass the
 information to an underlying protocol known as Internet Protocol (IP), which
 will actively work with it.</p>
@@ -233,7 +233,6 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
 
   
   <hr/>

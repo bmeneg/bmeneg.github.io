@@ -119,7 +119,7 @@ call. The connection request is then received by the server system which waits
 for a direct call to <em>accept()</em> from the server application, and once it&rsquo;s
 issued the <em>3-way handshake</em> can start.</p>
 <h4 id="3-way-handshake">3-way handshake</h4>
-<p>This handshake set the values for both directions packets' sequence numbers,
+<p>This handshake set the values for both directions packets&rsquo; sequence numbers,
 which has its first value set randomly and also guarantees both sides are aware
 that if they wish to finish the connection they must start the termination
 process, and not just drop the other without any warnings (although it doesn&rsquo;t
@@ -213,7 +213,7 @@ of this series and literally encapsulate it within the, what is called,
 <p>Using HTTP client side of our application and remembering that HTTP protocols
 uses TCP protocol as its transport layer, the request content that will be held
 by TCP&rsquo;s payload is:</p>
-<pre><code>&gt; GET / HTTP/1.1
+<pre tabindex="0"><code>&gt; GET / HTTP/1.1
 &gt; Host: 127.0.0.1:8080
 &gt; User-Agent: curl/7.61.1
 &gt; Accept: */*
@@ -222,14 +222,14 @@ we can use the <em>tcpdump</em> tool to monitor the network interface (<strong>l
 case, since we are working with <em>localhost</em>) for all incoming and outgoing
 packets in a transport layer point of view, while sending requests to the
 server:</p>
-<pre><code># tcpdump --dont-verify-checksums -i lo -X -n -v 'port 8080'
+<pre tabindex="0"><code># tcpdump --dont-verify-checksums -i lo -X -n -v &#39;port 8080&#39;
 </code></pre><blockquote>
 <p>NOTE: the <code>--dont-verify-checksums</code> option was used to hide checksum errors
 from output. It&rsquo;s required due to the checksum offloading my operating system
 is performing letting the checksum creation responsibility to the network
-device instead of the os' TCP stack.</p>
+device instead of the os&rsquo; TCP stack.</p>
 </blockquote>
-<pre><code>19:03:15.252021 IP (tos 0x0, ttl 64, id 31238, offset 0, flags [DF], proto TCP (6), length 130)
+<pre tabindex="0"><code>19:03:15.252021 IP (tos 0x0, ttl 64, id 31238, offset 0, flags [DF], proto TCP (6), length 130)
     127.0.0.1.44328 &gt; 127.0.0.1.webcache: Flags [P.], seq 1:79, ack 1, win 512, options [nop,nop,TS val 420155347 ecr 420155347], length 78: HTTP, length: 78
         GET / HTTP/1.1
         Host: localhost:8080
@@ -252,14 +252,14 @@ address and TCP port): <em>webcache</em> is a default port name set in
 <em>/etc/services</em> file as an  alias to the port number <strong>8080</strong> that is being
 listened by our HTTP server.</p>
 </blockquote>
-<pre><code>$ grep webcache /etc/services
+<pre tabindex="0"><code>$ grep webcache /etc/services
 webcache        8080/tcp        http-alt        # WWW caching service
 webcache        8080/udp        http-alt        # WWW caching service
 </code></pre><blockquote>
 </blockquote>
 <p>Now, right in the same output from <em>tcpdump</em> we can also get the servers reply
 data:</p>
-<pre><code>19:03:15.254766 IP (tos 0x0, ttl 64, id 52968, offset 0, flags [DF], proto TCP (6), length 139)
+<pre tabindex="0"><code>19:03:15.254766 IP (tos 0x0, ttl 64, id 52968, offset 0, flags [DF], proto TCP (6), length 139)
     127.0.0.1.webcache &gt; 127.0.0.1.44328: Flags [P.], seq 1:88, ack 79, win 512, options [nop,nop,TS val 420155350 ecr 420155347], length 87: HTTP, length: 87
         HTTP/1.1 200 OK
         Content-Length: 22
@@ -275,7 +275,6 @@ data:</p>
         0x0060:  2d54 7970 653a 2074 6578 742f 706c 6169  -Type:.text/plai
         0x0070:  6e0d 0a0d 0a59 6f75 2068 6176 6520 7265  n....You.have.re
         0x0080:  7175 6573 7465 643a 202f 0a              quested:./.
-
 </code></pre><p>If we start checking all bytes/bits of both segments we&rsquo;re going to see that
 the values there present matches the values presented by <em>tcpdump</em> output in
 the second line, where <em>flags</em>, <em>seq</em>, <em>ack</em>, <em>win</em>, <em>options</em> and <em>length</em> are
@@ -320,7 +319,6 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
 
   
   <hr/>

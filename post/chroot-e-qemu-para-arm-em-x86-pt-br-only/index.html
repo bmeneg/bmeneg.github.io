@@ -71,43 +71,43 @@ ele deve usar para interpretar outro que foi compilado para uma arquitura
 específica X. Mas vamos com calma.</p>
 <p>Para começar, vamos supor que precisamos criar uma imagem de um sistema de arquivos
 ARM para depois poder utilizar na plataforma ARM.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ dd of<span style="color:#f92672">=</span>arm-rootfs.img bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> seek<span style="color:#f92672">=</span>4G count<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
-<span style="color:#75715e"># mkfs.ext4 -F arm-rootfs.img</span>
-</code></pre></div><p>Após isso apenas monte esta imagem em qualquer local.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir arm-chroot
-<span style="color:#75715e"># mount -o loop arm-rootfs arm-chroot/</span>
-</code></pre></div><p>Com um RootFS de alguma distribuição ARM em mãos (por exemplo este do <a href="br2.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz">ArchLinux
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ dd of<span style="color:#f92672">=</span>arm-rootfs.img bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> seek<span style="color:#f92672">=</span>4G count<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mkfs.ext4 -F arm-rootfs.img</span>
+</span></span></code></pre></div><p>Após isso apenas monte esta imagem em qualquer local.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ mkdir arm-chroot
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mount -o loop arm-rootfs arm-chroot/</span>
+</span></span></code></pre></div><p>Com um RootFS de alguma distribuição ARM em mãos (por exemplo este do <a href="br2.mirror.archlinuxarm.org/os/ArchLinuxARM-armv7-latest.tar.gz">ArchLinux
 ARM</a>),
 descompacte dentro da pasta que foi criada e que será onde acessaremos como
 chroot.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot</span>
-</code></pre></div><p>Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactação
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># tar -zxpf ArchLinuxArm-armv7-latest.tar.gz --numeric-owner -C arm-chroot</span>
+</span></span></code></pre></div><p>Caso demorar muito (o que não deve acontecer) pode utilizar uma descompactação
 paralela, porém é necessário possuir alguma aplicação com tal suporte instalado,
 como o <strong>pigz</strong>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot</span>
-</code></pre></div><p>A partir de agora é onde a <em>mágica</em> acontece: baixe a versão estática do binário
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># tar -xpf ArchLinuxArm-sun7i-latest.tar.gz --use-compress-program=pigz --numeric-owner -C arm-chroot</span>
+</span></span></code></pre></div><p>A partir de agora é onde a <em>mágica</em> acontece: baixe a versão estática do binário
 do qemu-user <a href="https://packages.debian.org/sid/qemu-user-static">aqui</a> e, caso
 você não utilizar a distribuição Debian ou alguma outra derivada deste, será
 necessário converter o pacote. Para isso pode ser utilizado a aplicação &ldquo;alien&rdquo;,
 a qual provavelmente deve existir no repositório da sua distribuição.</p>
 <p>Uma vez instalado no sistema o <strong>qemu-arm-static</strong>, faça uma cópia do mesmo para
 o sistema ARM:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static</span>
-</code></pre></div><p>Feito isso, está na hora de definir este como interpretador de executáveis que
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># cp /usr/bin/qemu-arm-static arm-chroot/usr/bin/qemu-arm-static</span>
+</span></span></code></pre></div><p>Feito isso, está na hora de definir este como interpretador de executáveis que
 foram compilados para ARM e que estão presentes sobre o seu Linux Kernel para
 x86. Para fazer isso é necessário você possuir o módulo <strong>binfmt_misc</strong>
 devidamente habilitado em seu kernel.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># zcat /proc/config.gz | grep -i binfmt_misc</span>
-CONFIG_BINFMT_MISC<span style="color:#f92672">=</span>y
-</code></pre></div><p>Certifíque-se que o mesmo foi montado.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># ls /proc/sys/fs/binfmt_misc/</span>
-</code></pre></div><p>Caso não, monte-o com:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc </span>
-</code></pre></div><p>Como já dito anteriormente, com este suporte é possível registrar um
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># zcat /proc/config.gz | grep -i binfmt_misc</span>
+</span></span><span style="display:flex;"><span>CONFIG_BINFMT_MISC<span style="color:#f92672">=</span>y
+</span></span></code></pre></div><p>Certifíque-se que o mesmo foi montado.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># ls /proc/sys/fs/binfmt_misc/</span>
+</span></span></code></pre></div><p>Caso não, monte-o com:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc </span>
+</span></span></code></pre></div><p>Como já dito anteriormente, com este suporte é possível registrar um
 interpretador específico para executar/interpretar os binários de outras
 plataformas, como ARMv7. O comando para registrar é um tanto diferente:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># echo &#39;:arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:&#39; &gt; /proc/sys/fs/binfmt_misc/register</span>
-</code></pre></div><p>Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># echo &#39;:arm:M::\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-arm-static:&#39; &gt; /proc/sys/fs/binfmt_misc/register</span>
+</span></span></code></pre></div><p>Antes de continuar, vamos entender o que é tudo isso. Segundo a documentação do
 módulo <a href="https://www.kernel.org/doc/Documentation/binfmt_misc.txt">binfmt_misc</a>
 temos a seguinte informação:</p>
 <blockquote>
@@ -122,9 +122,9 @@ like :name:type:offset:magic:mask:interpreter:flags (where you can choose the
 &lsquo;:&rsquo; upon your needs) and echo it to /proc/sys/fs/binfmt_misc/register.</p>
 </blockquote>
 <p>Ou seja, cada campo separado por &lsquo;:&rsquo; possui um significado próprio, sendo estes:</p>
-<pre><code>- name: nome que será dado ao registro no kernel, para nós, 'arm';
+<pre tabindex="0"><code>- name: nome que será dado ao registro no kernel, para nós, &#39;arm&#39;;
 - type: o tipo de dados que será usado para identificar o executável, para nós, 
-  'M' de 'magic';
+  &#39;M&#39; de &#39;magic&#39;;
 - offset: distância em bytes que o valor mágico estará do início do cabeçalho do 
   executável, para nós foi omitido que significa um offset de 0;
 - magic: são os valores exatos que devem existir nos cabeçalhos dos executáveis 
@@ -144,13 +144,13 @@ plataforma ARM, ou seja, todos arquivos <em>executáveis, com formato ELF de 32
 bits e compilados para ARM</em> devem ser executados pelo <strong>interpreter</strong>.</p>
 <p>Sendo assim, o sistema ARM em arm-chroot/ já está pronto para ser utilizado,
 agora basta fazer o processo comum do chroot.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># mount -t proc /proc arm-chroot/proc</span>
-<span style="color:#75715e"># mount -o bind /dev arm-chroot/dev</span>
-<span style="color:#75715e"># mount -o bind /dev/pts arm-chroot/dev/pts</span>
-<span style="color:#75715e"># mount -o bind /sys arm-chroot/sys</span>
-<span style="color:#75715e"># mount -o bind /run arm-chroot/run</span>
-<span style="color:#75715e"># chroot arm-chroot/ /bin/bash</span>
-</code></pre></div><p>Uma vez dentro, você pode executar os comandos normais da distribuição referente
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># mount -t proc /proc arm-chroot/proc</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mount -o bind /dev arm-chroot/dev</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mount -o bind /dev/pts arm-chroot/dev/pts</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mount -o bind /sys arm-chroot/sys</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mount -o bind /run arm-chroot/run</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># chroot arm-chroot/ /bin/bash</span>
+</span></span></code></pre></div><p>Uma vez dentro, você pode executar os comandos normais da distribuição referente
 ao rootfs utilizado. No meu caso, utilizando o rootfs do ArchLinux ARM, posso
 executar o <strong>pacman -S</strong> para realizar instalações de pacotes do sistema, que
 irão afetar apenas os arquivos do sistema dentro de arm-chroot/.</p>
@@ -192,7 +192,6 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
 
   
   <hr/>

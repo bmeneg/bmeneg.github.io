@@ -65,44 +65,44 @@ modules built properly, make sure to check how to build out-of-tree modules
 before getting here.</p>
 <p><em>dracut</em> probably is going to be already installed in your system, so you can
 skip that from <em>dnf</em> call, otherwise:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dnf install qemu-system-x86 elfutils-libelf-devel dracut
-</code></pre></div><p>It&rsquo;s also worth checking if you system has any virtualization technology
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo dnf install qemu-system-x86 elfutils-libelf-devel dracut
+</span></span></code></pre></div><p>It&rsquo;s also worth checking if you system has any virtualization technology
 enabled, it&rsquo;ll improve your experience by a great amount:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ lscpu | grep Virt
-Virtualization:                  AMD-V
-... or ...
-Virtualization:                  VT-x
-</code></pre></div><p>If so, make sure you have <strong>kvm</strong> module enabled in your system and also to
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ lscpu | grep Virt
+</span></span><span style="display:flex;"><span>Virtualization:                  AMD-V
+</span></span><span style="display:flex;"><span>... or ...
+</span></span><span style="display:flex;"><span>Virtualization:                  VT-x
+</span></span></code></pre></div><p>If so, make sure you have <strong>kvm</strong> module enabled in your system and also to
 install <strong>qemu-kvm</strong> package:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ lsmod | grep kvm
-kvm_amd               <span style="color:#ae81ff">114688</span>  <span style="color:#ae81ff">0</span>
-kvm                   <span style="color:#ae81ff">802816</span>  <span style="color:#ae81ff">1</span> kvm_amd
-... or ...
-kvm_intel             <span style="color:#ae81ff">114688</span>  <span style="color:#ae81ff">0</span>
-kvm                   <span style="color:#ae81ff">802816</span>  <span style="color:#ae81ff">1</span> kvm_intel
-
-$ sudo dnf install qemu-kvm
-</code></pre></div><h2 id="compilation-step">Compilation step</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ lsmod | grep kvm
+</span></span><span style="display:flex;"><span>kvm_amd               <span style="color:#ae81ff">114688</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>kvm                   <span style="color:#ae81ff">802816</span>  <span style="color:#ae81ff">1</span> kvm_amd
+</span></span><span style="display:flex;"><span>... or ...
+</span></span><span style="display:flex;"><span>kvm_intel             <span style="color:#ae81ff">114688</span>  <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>kvm                   <span style="color:#ae81ff">802816</span>  <span style="color:#ae81ff">1</span> kvm_intel
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ sudo dnf install qemu-kvm
+</span></span></code></pre></div><h2 id="compilation-step">Compilation step</h2>
 <p>Compiling the kernel can be somewhat tricky to get it right the first time.
 You can use a brand new configuration file or the exact same one your local
 installation is running.</p>
 <p>If you wish to run the exact same kernel configuration you have running:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cp /boot/config-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> &lt;kernel-src&gt;/.config
-$ make olddefconfig
-$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span>
-$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span> modules_install
-</code></pre></div><p>On the other hand, you can try something completely new:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ make x86_64_defconfig
-$ make kvmconfig
-$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span>
-$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span> modules_install
-</code></pre></div><p>But in both cases something I recommend you to try is to enable the debugging
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cp /boot/config-<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> &lt;kernel-src&gt;/.config
+</span></span><span style="display:flex;"><span>$ make olddefconfig
+</span></span><span style="display:flex;"><span>$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span> modules_install
+</span></span></code></pre></div><p>On the other hand, you can try something completely new:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ make x86_64_defconfig
+</span></span><span style="display:flex;"><span>$ make kvmconfig
+</span></span><span style="display:flex;"><span>$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>$ make -j<span style="color:#66d9ef">$(</span>nproc<span style="color:#66d9ef">)</span> modules_install
+</span></span></code></pre></div><p>But in both cases something I recommend you to try is to enable the debugging
 options you have at disposal (they are many!), which I&rsquo;m going to present some
 of them I suggest:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ./scripts/config -e DEBUG_INFO -e DEBUG_KERNEL -e DEBUG_INFO_DWARF4
-$ ./scripts/config -e DEBUG_SECTION_MISMATCH -e DEBUG_OBJECTS -e DEBUG_OBJECTS_WORK -e DEBUG_VM
-$ ./scripts/config -e GDB_SCRIPTS -e HEADERS_INSTALL
-</code></pre></div><p>The first line of **DEBUG_** options are the standard ones I suggest you have
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ./scripts/config -e DEBUG_INFO -e DEBUG_KERNEL -e DEBUG_INFO_DWARF4
+</span></span><span style="display:flex;"><span>$ ./scripts/config -e DEBUG_SECTION_MISMATCH -e DEBUG_OBJECTS -e DEBUG_OBJECTS_WORK -e DEBUG_VM
+</span></span><span style="display:flex;"><span>$ ./scripts/config -e GDB_SCRIPTS -e HEADERS_INSTALL
+</span></span></code></pre></div><p>The first line of <strong>DEBUG_</strong> options are the standard ones I suggest you have
 enabled regardless the portion of the kernel you&rsquo;re touching at. The second
 line is basically things useful for me, that makes sense for the type of
 feature I&rsquo;m currently working on, which may significantly change to your case.
@@ -141,29 +141,29 @@ we&rsquo;re going to create before we actually run it.</p>
 <p>If you&rsquo;ve built your module as built-in, the only thing you need is to create
 the ramdisk pointing to the kernel image generated by the compilation step of
 the kernel in question:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dracut -v -f ramdisk.img &lt;kernel-name&gt;
-</code></pre></div><p>Where the <em>kernel-name</em> is the name of the folder that was created during the
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo dracut -v -f ramdisk.img &lt;kernel-name&gt;
+</span></span></code></pre></div><p>Where the <em>kernel-name</em> is the name of the folder that was created during the
 <code>make modules-install</code> step.</p>
 <p>On the other hand, if your module was built as a loadable one, you need to
 import this driver file into ramdisk, it&rsquo;s done by passing folder path where
 the <strong>.ko</strong> is located. For instance, assuming the path is
 <code>/home/myuser/my-great-module/</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo dracut -v -f --include <span style="color:#e6db74">&#34;/home/myuser/my-great-module&#34;</span> <span style="color:#e6db74">&#34;/my-module&#34;</span> ramdisk.img &lt;kernel-name&gt;
-</code></pre></div><p>In this way you&rsquo;re going to have your folder module copied into the ramdisk at
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ sudo dracut -v -f --include <span style="color:#e6db74">&#34;/home/myuser/my-great-module&#34;</span> <span style="color:#e6db74">&#34;/my-module&#34;</span> ramdisk.img &lt;kernel-name&gt;
+</span></span></code></pre></div><p>In this way you&rsquo;re going to have your folder module copied into the ramdisk at
 <code>/my-module</code>.</p>
 <h2 id="execution-step">Execution step</h2>
 <p>Ok, now it&rsquo;s time to get our compiled kernel plus the ramdisk we just created
 and bundle them together to launch the virtualization machinery with that.
 Just to make things clear, lets assume some &ldquo;variables&rdquo;:</p>
-<pre><code>kernel_path = /home/myuser/my-kernel/
+<pre tabindex="0"><code>kernel_path = /home/myuser/my-kernel/
 ramdisk_path = /home/myuser/my-ramdisk/
 </code></pre><p>Now:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ qemu-system-x86_64 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-kernel $kernel_path/vmlinux <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-initrd $ramdisk_path/ramdisk.img <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-append <span style="color:#e6db74">&#34;console=ttyS0 nokaslr&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-nographic -enable-kvm -cpu host -m <span style="color:#ae81ff">512</span>
-</code></pre></div><p>The above command will launch <code>qemu-system-x86_64</code> using the our kernel and
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ qemu-system-x86_64 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-kernel $kernel_path/vmlinux <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-initrd $ramdisk_path/ramdisk.img <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-append <span style="color:#e6db74">&#34;console=ttyS0 nokaslr&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-nographic -enable-kvm -cpu host -m <span style="color:#ae81ff">512</span>
+</span></span></code></pre></div><p>The above command will launch <code>qemu-system-x86_64</code> using the our kernel and
 ramdisk plus some additional parameters that you can fine the meaning pretty
 easily checking <code>qemu-system-x86_64</code> manpage. But you don&rsquo;t need to worry
 about these additional parameters for now; their usage there is basically to
@@ -172,42 +172,42 @@ improve the debugging experience and also to allow better performance.</p>
 popping up on the console screen, that&rsquo;s your custom kernel and ramdisk
 booting. Whatever changes you&rsquo;ve done to that, is going to be there. Once the
 ramdisk finished its boot you&rsquo;re going to see something like:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Press Enter <span style="color:#66d9ef">for</span> maintenance
-<span style="color:#f92672">(</span>or press Control-D to <span style="color:#66d9ef">continue</span><span style="color:#f92672">)</span>:
-</code></pre></div><p>Hit enter and then load your module (if built as a loadable module):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">:/root# insmod my-module/test.ko
-</code></pre></div><h2 id="debugging-step">Debugging step</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>Press Enter <span style="color:#66d9ef">for</span> maintenance
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>or press Control-D to <span style="color:#66d9ef">continue</span><span style="color:#f92672">)</span>:
+</span></span></code></pre></div><p>Hit enter and then load your module (if built as a loadable module):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>:/root# insmod my-module/test.ko
+</span></span></code></pre></div><h2 id="debugging-step">Debugging step</h2>
 <p>Moving forward, the debugging step is somewhat straightforward if you&rsquo;re
 already used to GDB. The only thing that changes is the way you attach the
 running kernel on <code>qemu</code> to the GDB session.</p>
 <p>The first thing is to actually add a couple arguments to the <code>qemu</code> call:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ qemu-system-x86_64 <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-kernel $kernel_path/vmlinux <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-initrd $ramdisk_path/ramdisk.img <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-append <span style="color:#e6db74">&#34;console=ttyS0 nokaslr&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-nographic -enable-kvm -cpu host -m <span style="color:#ae81ff">512</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>	-s -S
-</code></pre></div><p>Yes, these last two <code>-s -S</code>, which make the execution wait on startup and also
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ qemu-system-x86_64 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-kernel $kernel_path/vmlinux <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-initrd $ramdisk_path/ramdisk.img <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-append <span style="color:#e6db74">&#34;console=ttyS0 nokaslr&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-nographic -enable-kvm -cpu host -m <span style="color:#ae81ff">512</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>	-s -S
+</span></span></code></pre></div><p>Yes, these last two <code>-s -S</code>, which make the execution wait on startup and also
 open a connection port <code>:1234</code>. With that, now we can attach GDB to this
 port and debug our kernel. But, before that lets add a special file that was
 created during kernel compilation, due to the <em>GDB_SCRIPTS</em> option, to our
 <code>~/.gdbinit</code> file:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ echo <span style="color:#e6db74">&#34;add-auto-load-safe-path </span>$kernel_path<span style="color:#e6db74">/scripts/gdb/vmlinux-gdb.py&#34;</span> &gt;&gt; ~/.gdbinit
-</code></pre></div><p>and finally start the debug:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ gdb $kernel_path/vmlinux
-...
-<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> tagert remote localhost:1234
-Remote debugging using localhost:1234
-0x000000000000fff0 in exception_stacks <span style="color:#f92672">()</span>
-<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> lx-
-lx-clk-summary        lx-device-list-bus    lx-fdtdump            lx-list-check         lx-symbols            
-lx-cmdline            lx-device-list-class  lx-genpd-summary      lx-lsmod              lx-timerlist          
-lx-configdump         lx-device-list-tree   lx-iomem              lx-mounts             lx-version            
-lx-cpus               lx-dmesg              lx-ioports            lx-ps                 
-<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> hbreak kernel_init
-Hardware assisted breakpoint <span style="color:#ae81ff">1</span> at 0xffffffff81b07d8a: file init/main.c, line 1358.
-<span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
-</code></pre></div><p>All these <code>lx-*</code> commands were added by the <code>vmlinux-gdb.py</code> helper created in
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ echo <span style="color:#e6db74">&#34;add-auto-load-safe-path </span>$kernel_path<span style="color:#e6db74">/scripts/gdb/vmlinux-gdb.py&#34;</span> &gt;&gt; ~/.gdbinit
+</span></span></code></pre></div><p>and finally start the debug:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ gdb $kernel_path/vmlinux
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> tagert remote localhost:1234
+</span></span><span style="display:flex;"><span>Remote debugging using localhost:1234
+</span></span><span style="display:flex;"><span>0x000000000000fff0 in exception_stacks <span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> lx-
+</span></span><span style="display:flex;"><span>lx-clk-summary        lx-device-list-bus    lx-fdtdump            lx-list-check         lx-symbols            
+</span></span><span style="display:flex;"><span>lx-cmdline            lx-device-list-class  lx-genpd-summary      lx-lsmod              lx-timerlist          
+</span></span><span style="display:flex;"><span>lx-configdump         lx-device-list-tree   lx-iomem              lx-mounts             lx-version            
+</span></span><span style="display:flex;"><span>lx-cpus               lx-dmesg              lx-ioports            lx-ps                 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span> hbreak kernel_init
+</span></span><span style="display:flex;"><span>Hardware assisted breakpoint <span style="color:#ae81ff">1</span> at 0xffffffff81b07d8a: file init/main.c, line 1358.
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>gdb<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>All these <code>lx-*</code> commands were added by the <code>vmlinux-gdb.py</code> helper created in
 compilation time. And from now on, you can follow the normal GDB commands to
 debug the kernel, side by side with the console running the boot process.</p>
 <p>I&rsquo;ve plans to create a post related to the debug process itself, with some
@@ -248,7 +248,6 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
 
   
   <hr/>

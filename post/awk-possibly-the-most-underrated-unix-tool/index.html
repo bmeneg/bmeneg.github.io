@@ -60,54 +60,54 @@ text processing, try to use what you already have and didn&rsquo;t know</em>.</p
 <h2 id="basic-structure">Basic structure</h2>
 <p>As many other Unix tools, <em>awk</em> handles <em>lines</em> as it input source; this lines
 are then matched against the following rule:</p>
-<pre><code>&lt;pattern&gt; { &lt;action&gt; }
+<pre tabindex="0"><code>&lt;pattern&gt; { &lt;action&gt; }
 </code></pre><p>being <code>pattern</code> the match that triggers the <code>action</code>.</p>
 <p>Although <code>pattern</code> can assume &ldquo;any&rdquo; value, there are two special ones: <code>BEGIN</code>
 and <code>END</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk">BEGIN { <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">action</span><span style="color:#f92672">&gt;</span> }
-END { <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">action</span><span style="color:#f92672">&gt;</span> }
-</code></pre></div><p><code>BEGIN</code> triggers an <em>action</em> before the first line is handled, while <code>END</code>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-awk" data-lang="awk"><span style="display:flex;"><span>BEGIN { <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">action</span><span style="color:#f92672">&gt;</span> }
+</span></span><span style="display:flex;"><span>END { <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">action</span><span style="color:#f92672">&gt;</span> }
+</span></span></code></pre></div><p><code>BEGIN</code> triggers an <em>action</em> before the first line is handled, while <code>END</code>
 triggers an <em>action</em> after the last line was processed, see:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls -l
-total <span style="color:#ae81ff">0</span>
--r--rw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:43 file1
--r--r--r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:44 file2
--rwxrw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:45 file3
--rw-rw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:45 file4
-$ cat ../my-awk-program
-BEGIN <span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;- START -&#34;</span> <span style="color:#f92672">}</span>
-<span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;processing new input line ...&#34;</span> <span style="color:#f92672">}</span>
-END <span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;- DONE -&#34;</span> <span style="color:#f92672">}</span>
-$ ls -l | awk -f ../my-awk-program
-- START -
-processing new input line ...
-processing new input line ...
-processing new input line ...
-processing new input line ...
-processing new input line ...
-- DONE -
-$
-</code></pre></div><h2 id="use-cases">Use cases</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ls -l
+</span></span><span style="display:flex;"><span>total <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>-r--rw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:43 file1
+</span></span><span style="display:flex;"><span>-r--r--r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:44 file2
+</span></span><span style="display:flex;"><span>-rwxrw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:45 file3
+</span></span><span style="display:flex;"><span>-rw-rw-r--. <span style="color:#ae81ff">1</span> bmeneg bmeneg <span style="color:#ae81ff">0</span> ago <span style="color:#ae81ff">19</span> 19:45 file4
+</span></span><span style="display:flex;"><span>$ cat ../my-awk-program
+</span></span><span style="display:flex;"><span>BEGIN <span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;- START -&#34;</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;processing new input line ...&#34;</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>END <span style="color:#f92672">{</span> print <span style="color:#e6db74">&#34;- DONE -&#34;</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>$ ls -l | awk -f ../my-awk-program
+</span></span><span style="display:flex;"><span>- START -
+</span></span><span style="display:flex;"><span>processing new input line ...
+</span></span><span style="display:flex;"><span>processing new input line ...
+</span></span><span style="display:flex;"><span>processing new input line ...
+</span></span><span style="display:flex;"><span>processing new input line ...
+</span></span><span style="display:flex;"><span>processing new input line ...
+</span></span><span style="display:flex;"><span>- DONE -
+</span></span><span style="display:flex;"><span>$
+</span></span></code></pre></div><h2 id="use-cases">Use cases</h2>
 <p>You already can imagine a couple of use cases for a system administrator or an
 automated task, right? Lets try to print the file name and the file owner of
 our current folder.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk">BEGIN { <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;name\towner&#34;</span> }
-END { <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;- done -&#34;</span>}
-{ <span style="color:#66d9ef">print</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">9</span>, <span style="color:#e6db74">&#34;\t&#34;</span>, <span style="color:#f92672">$</span><span style="color:#ae81ff">3</span> }
-</code></pre></div><p>Now let&rsquo;s run this <em>awk</em> program with our <code>ls -l</code> output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ls -l | awk -f ../my-awk-program
-name    owner
-         
-file1    bmeneg
-file2    bmeneg
-file3    bmeneg
-file4    bmeneg
-- <span style="color:#66d9ef">done</span> -
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-awk" data-lang="awk"><span style="display:flex;"><span>BEGIN { <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;name\towner&#34;</span> }
+</span></span><span style="display:flex;"><span>END { <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;- done -&#34;</span>}
+</span></span><span style="display:flex;"><span>{ <span style="color:#66d9ef">print</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">9</span>, <span style="color:#e6db74">&#34;\t&#34;</span>, <span style="color:#f92672">$</span><span style="color:#ae81ff">3</span> }
+</span></span></code></pre></div><p>Now let&rsquo;s run this <em>awk</em> program with our <code>ls -l</code> output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ls -l | awk -f ../my-awk-program
+</span></span><span style="display:flex;"><span>name    owner
+</span></span><span style="display:flex;"><span>         
+</span></span><span style="display:flex;"><span>file1    bmeneg
+</span></span><span style="display:flex;"><span>file2    bmeneg
+</span></span><span style="display:flex;"><span>file3    bmeneg
+</span></span><span style="display:flex;"><span>file4    bmeneg
+</span></span><span style="display:flex;"><span>- <span style="color:#66d9ef">done</span> -
+</span></span></code></pre></div><blockquote>
 <p>NOTE: feel free to try adding <code>#!/usr/bin/awk -f</code> to the first line of the
 program and set exec permission to that and then:</p>
 </blockquote>
-<pre><code>$ ls -l | ../my-awk-program
+<pre tabindex="0"><code>$ ls -l | ../my-awk-program
 </code></pre><blockquote>
 <p><em>awk</em> is also an interpreter.</p>
 </blockquote>
@@ -123,43 +123,43 @@ within double quotes and that&rsquo;s the reason you see both being placed aroun
 <code>&quot;\t&quot;</code>.</p>
 <p>Now, to demonstrate the use of real variables let me introduce you a more
 elaborated example:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk"><span style="color:#75715e">#!//usr/bin/awk -f</span>
-
-BEGIN {
-    <span style="color:#75715e"># variables can be declared anywhere</span>
-    <span style="color:#a6e22e">my_name</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;awbot&#34;</span>
-    <span style="color:#75715e"># remember, awk was made to handle text input</span>
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Hey user, tell me your name: &#34;</span>
-}
-{
-    <span style="color:#75715e"># NF = number of fields</span>
-    <span style="color:#75715e"># here we using it as a variable</span>
-    <span style="color:#66d9ef">if</span> (NF <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) {
-        <span style="color:#75715e"># and here we are using NF value to access the NFth (last) field</span>
-        <span style="color:#75715e"># creating: &#39;first + last name&#39; standard</span>
-        <span style="color:#a6e22e">user_name</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">1</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span>NF
-    } <span style="color:#66d9ef">else</span> {
-        <span style="color:#a6e22e">user_name</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">1</span>
-    }
-
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Hi&#34;</span>, <span style="color:#a6e22e">user_name</span> <span style="color:#e6db74">&#34;! My name is&#34;</span>, <span style="color:#a6e22e">my_name</span>
-    <span style="color:#66d9ef">exit</span>
-}
-END {
-    <span style="color:#75715e"># variables are shared between patterns</span>
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Bye&#34;</span>, <span style="color:#a6e22e">user_name</span>
-}
-</code></pre></div><p><em>Wait, what is that??</em> Yes, that&rsquo;s right, <em>awk</em> has all those things you know
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-awk" data-lang="awk"><span style="display:flex;"><span><span style="color:#75715e">#!//usr/bin/awk -f</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>BEGIN {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># variables can be declared anywhere</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">my_name</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;awbot&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># remember, awk was made to handle text input</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Hey user, tell me your name: &#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># NF = number of fields</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># here we using it as a variable</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (NF <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># and here we are using NF value to access the NFth (last) field</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># creating: &#39;first + last name&#39; standard</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">user_name</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">1</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span>NF
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">user_name</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Hi&#34;</span>, <span style="color:#a6e22e">user_name</span> <span style="color:#e6db74">&#34;! My name is&#34;</span>, <span style="color:#a6e22e">my_name</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">exit</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>END {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># variables are shared between patterns</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Bye&#34;</span>, <span style="color:#a6e22e">user_name</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><em>Wait, what is that??</em> Yes, that&rsquo;s right, <em>awk</em> has all those things you know
 from other languages: conditions, loops, arithmetic operations, variables, &hellip;
 you can indeed play around with the string being used as input to your program,
 you can change the processing step depending the size of the input, or you can
 even change that based on the string per se. For instance, add the following
 rule right after the <code>BEGIN</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk"><span style="color:#e6db74">/^$/</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">/^quit\s*/</span>  {
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Ok, quiting...&#34;</span>
-    <span style="color:#66d9ef">exit</span>
-}
-</code></pre></div><p>It will make the program quit whenever you enter an empty line or the word
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-awk" data-lang="awk"><span style="display:flex;"><span><span style="color:#e6db74">/^$/</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">/^quit\s*/</span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Ok, quiting...&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">exit</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It will make the program quit whenever you enter an empty line or the word
 <code>quit</code>. As you may have thought, if we&rsquo;re talking about text processing it&rsquo;s
 almost mandatory to know something about <em>regular expressions</em>, this is the
 core engine running behind this whole language.</p>
@@ -181,114 +181,113 @@ changelogs, an so on.</p>
 my job: consider the Linux kernel patch log, you need to retrieve some
 information from patch headers and output it in a different way, not possible
 using git&rsquo;s own <code>--pretty</code> feature. The input would be like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5
-From 028db3e290f15ac509084c0fc3b9d021f668f877 Mon Sep <span style="color:#ae81ff">17</span> 00:00:00 <span style="color:#ae81ff">2001</span>
-From: Linus Torvalds &lt;torvalds@linux-foundation.org&gt;
-Date: Wed, <span style="color:#ae81ff">10</span> Jul <span style="color:#ae81ff">2019</span> 18:43:43 -0700
-Subject: Revert <span style="color:#e6db74">&#34;Merge tag &#39;keys-acl-20190703&#39; of
-</span><span style="color:#e6db74"> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs&#34;</span>
-
-...
-
-From 9787aed57dd33ba5c15a713c2c50e78baeb5052d Mon Sep <span style="color:#ae81ff">17</span> 00:00:00 <span style="color:#ae81ff">2001</span>
-From: Nathan Chancellor &lt;natechancellor@gmail.com&gt;
-Date: Mon, <span style="color:#ae81ff">1</span> Jul <span style="color:#ae81ff">2019</span> 11:28:08 -0700
-Subject: coresight: Make the coresight_device_fwnode_match declaration<span style="color:#960050;background-color:#1e0010">&#39;</span>s
- fwnode parameter const
-
-...
-</code></pre></div><p>This input goes on for about 14 patches.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5
+</span></span><span style="display:flex;"><span>From 028db3e290f15ac509084c0fc3b9d021f668f877 Mon Sep <span style="color:#ae81ff">17</span> 00:00:00 <span style="color:#ae81ff">2001</span>
+</span></span><span style="display:flex;"><span>From: Linus Torvalds &lt;torvalds@linux-foundation.org&gt;
+</span></span><span style="display:flex;"><span>Date: Wed, <span style="color:#ae81ff">10</span> Jul <span style="color:#ae81ff">2019</span> 18:43:43 -0700
+</span></span><span style="display:flex;"><span>Subject: Revert <span style="color:#e6db74">&#34;Merge tag &#39;keys-acl-20190703&#39; of
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>From 9787aed57dd33ba5c15a713c2c50e78baeb5052d Mon Sep <span style="color:#ae81ff">17</span> 00:00:00 <span style="color:#ae81ff">2001</span>
+</span></span><span style="display:flex;"><span>From: Nathan Chancellor &lt;natechancellor@gmail.com&gt;
+</span></span><span style="display:flex;"><span>Date: Mon, <span style="color:#ae81ff">1</span> Jul <span style="color:#ae81ff">2019</span> 11:28:08 -0700
+</span></span><span style="display:flex;"><span>Subject: coresight: Make the coresight_device_fwnode_match declaration<span style="color:#960050;background-color:#1e0010">&#39;</span>s
+</span></span><span style="display:flex;"><span> fwnode parameter const
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span></code></pre></div><p>This input goes on for about 14 patches.</p>
 <p>And the <em>awk</em> program, with some comments to help you understand what is going
 on and also possibly with some issues, is as follows:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-awk" data-lang="awk">BEGIN {
-    <span style="color:#a6e22e">total_patches</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-    <span style="color:#a6e22e">total_proc_patches</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-}
-<span style="color:#e6db74">/^From /</span> {
-    <span style="color:#75715e"># store the second field from input</span>
-    <span style="color:#a6e22e">commit_id</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">2</span> 
-    <span style="color:#a6e22e">total_patches</span><span style="color:#f92672">++</span>
-    <span style="color:#75715e"># get next input, ignoring next patterns</span>
-    <span style="color:#a6e22e">next</span>
-}
-<span style="color:#e6db74">/^From: /</span> {
-    <span style="color:#75715e"># split the whole input using &#39;&lt;&#39; as delimiter</span>
-    <span style="color:#a6e22e">nf</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">split</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">a</span>, <span style="color:#e6db74">&#34;&lt;&#34;</span>)
-    <span style="color:#75715e"># get everything after 7th char</span>
-    <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>], <span style="color:#ae81ff">7</span>)
-    <span style="color:#a6e22e">next</span>
-}
-<span style="color:#e6db74">/^Date: /</span> {
-    <span style="color:#a6e22e">date_dmy</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">3</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">4</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">5</span>
-    <span style="color:#a6e22e">next</span>
-}
-<span style="color:#e6db74">/^Subject: /</span> {
-    <span style="color:#75715e"># you also can recheck for a substring with regex</span>
-    <span style="color:#75715e"># ignore merges and tagging commits</span>
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;([Rr]evert)?.*\&#34;?[Mm]erge.*&#34;</span>) {
-        <span style="color:#a6e22e">next</span>
-    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;Linu[xs] [0-9].[0-9]&#34;</span>) {
-        <span style="color:#a6e22e">next</span> 
-    }    
-    <span style="color:#a6e22e">subject</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>)
-    <span style="color:#a6e22e">total_proc_patches</span><span style="color:#f92672">++</span>
-    <span style="color:#75715e"># NR = number of records (inputs)</span>
-    <span style="color:#a6e22e">subj_nr</span> <span style="color:#f92672">=</span> NR
-    <span style="color:#a6e22e">next</span>
-}
-{
-    <span style="color:#66d9ef">if</span> (NR <span style="color:#f92672">==</span> <span style="color:#a6e22e">subj_nr</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) {
-        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;^$&#34;</span>) {
-            <span style="color:#75715e"># awk offers some builtin helper functions</span>
-            <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">sprintf</span>(<span style="color:#e6db74">&#34;[%s] %s\n%s\nby %s\n&#34;</span>, <span style="color:#a6e22e">date_dmy</span>, <span style="color:#a6e22e">commit_id</span>, <span style="color:#a6e22e">subject</span>,
-              <span style="color:#a6e22e">name</span>)
-        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;^\\s&#34;</span>) {
-            <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">sprintf</span>(<span style="color:#e6db74">&#34;[%s] %s\n%s%s\nby %s\n&#34;</span>, <span style="color:#a6e22e">date_dmy</span>, <span style="color:#a6e22e">commit_id</span>, <span style="color:#a6e22e">subject</span>,
-              <span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">name</span>)
-        }
-        <span style="color:#66d9ef">print</span> <span style="color:#a6e22e">r</span>
-    }
-}
-END {
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;-----&#34;</span>
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Total patches found:&#34;</span>, <span style="color:#a6e22e">total_patches</span>
-    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Total patches manipulated:&#34;</span>, <span style="color:#a6e22e">total_proc_patches</span>
-}
-
-</code></pre></div><p>And the output:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5 | awk -f mail.awk
-<span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> Jul 2019<span style="color:#f92672">]</span> 9787aed57dd33ba5c15a713c2c50e78baeb5052d
-coresight: Make the coresight_device_fwnode_match declaration<span style="color:#960050;background-color:#1e0010">&#39;</span>s fwnode parameter const
-by Nathan Chancellor 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">18</span> Jul 2019<span style="color:#f92672">]</span> 40ef768ab6eecc1b51461a034274350b31fc29d1
-Remove references to dead website.
-by Dave Jones 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">30</span> Apr 2019<span style="color:#f92672">]</span> 618381f09cc15592bf3afe846c6a94e9bfcd9ce4
-hexagon: switch to generic version of pte allocation
-by Mike Rapoport 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">11</span> Jul 2019<span style="color:#f92672">]</span> 8cf66504210d308a35cca35fe9c310b1241f9fa7
-iommu/amd: fix a crash in iova_magazine_free_pfns
-by Qian Cai 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">31</span> Jul 2019<span style="color:#f92672">]</span> 1b7e816fc80e668f0ccc8542cec20b9259abace1
-mm: slub: Fix slab walking <span style="color:#66d9ef">for</span> init_on_free
-by Laura Abbott 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">30</span> Jul 2019<span style="color:#f92672">]</span> b36a1552d7319bbfd5cf7f08726c23c5c66d4f73
-Bluetooth: hci_uart: check <span style="color:#66d9ef">for</span> missing tty operations
-by Vladis Dronov 
-
-<span style="color:#f92672">[</span><span style="color:#ae81ff">5</span> Aug 2019<span style="color:#f92672">]</span> bfd77145f35c3deafe57e9eb67fff4ccffdaef6e
-Makefile: Convert -Wimplicit-fallthrough<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> to just -Wimplicit-fallthrough <span style="color:#66d9ef">for</span> clang
-by Joe Perches 
-
------
-Total patches found: <span style="color:#ae81ff">14</span>
-Total patches manipulated: <span style="color:#ae81ff">7</span>
-</code></pre></div><p>As you can see, with a not so complicated <em>awk</em> program I can somewhat easily
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-awk" data-lang="awk"><span style="display:flex;"><span>BEGIN {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">total_patches</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">total_proc_patches</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/^From /</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># store the second field from input</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">commit_id</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">2</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">total_patches</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># get next input, ignoring next patterns</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">next</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/^From: /</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># split the whole input using &#39;&lt;&#39; as delimiter</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">nf</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">split</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">a</span>, <span style="color:#e6db74">&#34;&lt;&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># get everything after 7th char</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">1</span>], <span style="color:#ae81ff">7</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">next</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/^Date: /</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">date_dmy</span> <span style="color:#f92672">=</span> <span style="color:#f92672">$</span><span style="color:#ae81ff">3</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">4</span><span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">$</span><span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">next</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/^Subject: /</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># you also can recheck for a substring with regex</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># ignore merges and tagging commits</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;([Rr]evert)?.*\&#34;?[Mm]erge.*&#34;</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">next</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;Linu[xs] [0-9].[0-9]&#34;</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">next</span> 
+</span></span><span style="display:flex;"><span>    }    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">subject</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">substr</span>(<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">total_proc_patches</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># NR = number of records (inputs)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">subj_nr</span> <span style="color:#f92672">=</span> NR
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">next</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (NR <span style="color:#f92672">==</span> <span style="color:#a6e22e">subj_nr</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;^$&#34;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># awk offers some builtin helper functions</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">sprintf</span>(<span style="color:#e6db74">&#34;[%s] %s\n%s\nby %s\n&#34;</span>, <span style="color:#a6e22e">date_dmy</span>, <span style="color:#a6e22e">commit_id</span>, <span style="color:#a6e22e">subject</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#f92672">$</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">~</span> <span style="color:#e6db74">&#34;^\\s&#34;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">r</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">sprintf</span>(<span style="color:#e6db74">&#34;[%s] %s\n%s%s\nby %s\n&#34;</span>, <span style="color:#a6e22e">date_dmy</span>, <span style="color:#a6e22e">commit_id</span>, <span style="color:#a6e22e">subject</span>,
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">$</span><span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">print</span> <span style="color:#a6e22e">r</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>END {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;-----&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Total patches found:&#34;</span>, <span style="color:#a6e22e">total_patches</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Total patches manipulated:&#34;</span>, <span style="color:#a6e22e">total_proc_patches</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>And the output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git format-patch --first-parent -k --stdout v5.2..v5.3-rc5 | awk -f mail.awk
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> Jul 2019<span style="color:#f92672">]</span> 9787aed57dd33ba5c15a713c2c50e78baeb5052d
+</span></span><span style="display:flex;"><span>coresight: Make the coresight_device_fwnode_match declaration<span style="color:#960050;background-color:#1e0010">&#39;</span>s fwnode parameter const
+</span></span><span style="display:flex;"><span>by Nathan Chancellor 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">18</span> Jul 2019<span style="color:#f92672">]</span> 40ef768ab6eecc1b51461a034274350b31fc29d1
+</span></span><span style="display:flex;"><span>Remove references to dead website.
+</span></span><span style="display:flex;"><span>by Dave Jones 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">30</span> Apr 2019<span style="color:#f92672">]</span> 618381f09cc15592bf3afe846c6a94e9bfcd9ce4
+</span></span><span style="display:flex;"><span>hexagon: switch to generic version of pte allocation
+</span></span><span style="display:flex;"><span>by Mike Rapoport 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">11</span> Jul 2019<span style="color:#f92672">]</span> 8cf66504210d308a35cca35fe9c310b1241f9fa7
+</span></span><span style="display:flex;"><span>iommu/amd: fix a crash in iova_magazine_free_pfns
+</span></span><span style="display:flex;"><span>by Qian Cai 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">31</span> Jul 2019<span style="color:#f92672">]</span> 1b7e816fc80e668f0ccc8542cec20b9259abace1
+</span></span><span style="display:flex;"><span>mm: slub: Fix slab walking <span style="color:#66d9ef">for</span> init_on_free
+</span></span><span style="display:flex;"><span>by Laura Abbott 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">30</span> Jul 2019<span style="color:#f92672">]</span> b36a1552d7319bbfd5cf7f08726c23c5c66d4f73
+</span></span><span style="display:flex;"><span>Bluetooth: hci_uart: check <span style="color:#66d9ef">for</span> missing tty operations
+</span></span><span style="display:flex;"><span>by Vladis Dronov 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">5</span> Aug 2019<span style="color:#f92672">]</span> bfd77145f35c3deafe57e9eb67fff4ccffdaef6e
+</span></span><span style="display:flex;"><span>Makefile: Convert -Wimplicit-fallthrough<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> to just -Wimplicit-fallthrough <span style="color:#66d9ef">for</span> clang
+</span></span><span style="display:flex;"><span>by Joe Perches 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>-----
+</span></span><span style="display:flex;"><span>Total patches found: <span style="color:#ae81ff">14</span>
+</span></span><span style="display:flex;"><span>Total patches manipulated: <span style="color:#ae81ff">7</span>
+</span></span></code></pre></div><p>As you can see, with a not so complicated <em>awk</em> program I can somewhat easily
 filter the input and generate my desirable output. And because of that, I
 insist, don&rsquo;t hesitate in consider using <em>awk</em> for your daily basis tasks
 around text processing.</p>
@@ -334,7 +333,6 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-
 
   
   <hr/>
